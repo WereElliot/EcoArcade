@@ -1,0 +1,107 @@
+/* EcoArcade Dashboard CSS - Statistical Edition */
+
+body {
+    background-color: #0b021a;
+    color: #fff;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    margin: 0; padding: 0;
+    line-height: 1.5;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+/* Header */
+.dashboard-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 3px solid #00f2ff;
+    padding-bottom: 20px; margin-bottom: 40px;
+}
+
+.glitch { font-size: 2.5rem; color: #00f2ff; text-shadow: 2px 2px #ff00e5; }
+.tagline { font-size: 0.8rem; color: #ff00e5; letter-spacing: 2px; }
+
+/* Sections (Levels) */
+.data-level { margin-bottom: 50px; }
+
+.section-heading {
+    font-size: 1.4rem; padding: 10px 20px;
+    border-left: 10px solid; margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.neon-blue { border-color: #00f2ff; color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+.neon-magenta { border-color: #ff00e5; color: #ff00e5; text-shadow: 0 0 10px #ff00e5; }
+.neon-green { border-color: #39ff14; color: #39ff14; text-shadow: 0 0 10px #39ff14; }
+
+.content-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 25px; border-radius: 12px;
+}
+
+.data-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+}
+
+/* Tables */
+.arcade-table {
+    width: 100%; border-collapse: collapse; margin-top: 10px;
+}
+
+.arcade-table th { text-align: left; color: #aaa; font-size: 0.8rem; padding-bottom: 10px; }
+.arcade-table td { padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+
+.highlight-row { color: #39ff14; font-weight: bold; }
+
+/* Charts */
+.bar-chart-vertical {
+    display: flex; align-items: flex-end; gap: 20px; height: 150px;
+    padding: 20px; background: rgba(0, 0, 0, 0.3); border-radius: 8px;
+}
+
+.bar-v {
+    width: 40px; background: #00f2ff; box-shadow: 0 0 10px #00f2ff;
+    transition: height 1s; cursor: help;
+}
+
+.chart-label { font-size: 0.85rem; color: #ccc; margin-top: 15px; }
+
+/* Renewable Box */
+.renewable-box { text-align: center; }
+.stat-large { font-size: 3.5rem; font-weight: 900; margin: 15px 0; }
+
+.progress-container {
+    height: 12px; background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px; overflow: hidden; margin: 15px 0;
+}
+
+.green-bar { background: #39ff14; box-shadow: 0 0 15px #39ff14; }
+
+/* Comparison Bars */
+.comparison-section { margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+
+.comp-item { margin-bottom: 20px; }
+.comp-item .label { font-size: 0.9rem; margin-bottom: 8px; display: block; }
+
+.bar-bg { height: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 5px; }
+.bar-fill { height: 100%; border-radius: 5px; }
+
+.blue { background: #00f2ff; }
+.magenta { background: #ff00e5; }
+.green { background: #39ff14; box-shadow: 0 0 10px #39ff14; }
+
+/* User Stats Hero */
+.user-stats-hero {
+    display: flex; justify-content: space-around; text-align: center; margin-bottom: 40px;
+}
+
+/* Tracking Table */
+.site-tracking-panel { margin-top: 50px; }
+.section-heading.small { font-size: 1rem; border-left-width: 5px; margin-bottom: 15px; }
+
+/* System Footer */
+.system-footer { text-align: center; padding: 50px; color: #444; font-size: 0.7rem; }

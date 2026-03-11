@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoArcade - Global Hero Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="logo-area">
+                <h1 class="glitch" data-text="ECOARCADE">ECOARCADE</h1>
+                <p class="tagline">ENVIRONMENTAL INTEL COMMAND // v1.0.0</p>
+            </div>
+            <div class="user-summary">
+                <div class="summary-item">
+                    <span class="label">STATUS:</span>
+                    <span class="value online">ACTIVE</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">RANK:</span>
+                    <span class="value" id="currentRank">RECRUIT</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <!-- LEVEL 1: GLOBAL DATA -->
+            <section class="data-level global-level">
+                <h2 class="section-heading neon-blue">GLOBAL IMPACT (37.1 Gt CO₂e)</h2>
+                <div class="content-box">
+                    <div class="data-grid">
+                        <div class="stats-table-container">
+                            <h3>Sector Breakdown (Annual)</h3>
+                            <table class="arcade-table">
+                                <thead>
+                                    <tr><th>Sector</th><th>Emissions</th><th>%</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Energy/Heat</td><td>27.1 Gt</td><td>73%</td></tr>
+                                    <tr><td>Agriculture</td><td>6.7 Gt</td><td>18%</td></tr>
+                                    <tr><td>Industry</td><td>1.9 Gt</td><td>5%</td></tr>
+                                    <tr><td>Waste</td><td>1.1 Gt</td><td>3%</td></tr>
+                                    <tr class="highlight-row"><td>Digital Sector</td><td>~1.4 Gt</td><td>~4%</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Historical Trend (2000-2020)</h3>
+                            <div class="bar-chart-vertical">
+                                <div class="bar-v" style="height: 60%" title="2000: 25Gt"></div>
+                                <div class="bar-v" style="height: 75%" title="2010: 33Gt"></div>
+                                <div class="bar-v" style="height: 95%" title="2020: 37Gt"></div>
+                            </div>
+                            <p class="chart-label">Emissions have increased by ~48% since 2000. Digital activities now rival the aviation industry's footprint.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LEVEL 2: REGIONAL DATA (KENYA/EAST AFRICA) -->
+            <section class="data-level regional-level">
+                <h2 class="section-heading neon-magenta">REGIONAL ANALYSIS (EAST AFRICA)</h2>
+                <div class="content-box">
+                    <div class="data-grid">
+                        <div class="stats-table-container">
+                            <h3>Kenya Sector Breakdown</h3>
+                            <table class="arcade-table">
+                                <thead>
+                                    <tr><th>Category</th><th>Emissions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Agriculture</td><td>~58%</td></tr>
+                                    <tr><td>Transport</td><td>~13%</td></tr>
+                                    <tr><td>Electricity</td><td>~7%</td></tr>
+                                    <tr><td>Waste/Other</td><td>~22%</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="renewable-box">
+                            <h3>Renewable Energy Share (Kenya)</h3>
+                            <div class="stat-large neon-green">~90%</div>
+                            <p>Powered by: Geothermal, Hydro, Wind, Solar.</p>
+                            <div class="progress-container">
+                                <div class="progress-bar green-bar" style="width: 90%"></div>
+                            </div>
+                            <p class="explanation">Kenya is a global leader in green energy. Most digital carbon here comes from devices and data centers elsewhere.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LEVEL 3: USER DATA (DIGITAL FOOTPRINT) -->
+            <section class="data-level user-level">
+                <h2 class="section-heading neon-green">YOUR DIGITAL MISSION</h2>
+                <div class="content-box">
+                    <div class="user-stats-hero">
+                        <div class="hero-stat">
+                            <h3>YOUR DIGITAL TOTAL</h3>
+                            <div class="stat-large" id="totalCO2">0.00g</div>
+                            <p>CO₂e Emitted this session</p>
+                        </div>
+                        <div class="hero-stat">
+                            <h3>HERO POINTS</h3>
+                            <div class="stat-large neon-magenta" id="totalPoints">0</div>
+                            <p>XP earned via quizzes</p>
+                        </div>
+                    </div>
+
+                    <div class="comparison-section">
+                        <h3>IMPACT COMPARISON</h3>
+                        <div class="comparison-bar">
+                            <div class="comp-item">
+                                <span class="label">Global Avg (Daily)</span>
+                                <div class="bar-bg"><div class="bar-fill blue" style="width: 100%"></div></div>
+                                <span class="val">~12.5 kg</span>
+                            </div>
+                            <div class="comp-item">
+                                <span class="label">Kenya Avg (Daily)</span>
+                                <div class="bar-bg"><div class="bar-fill magenta" style="width: 15%"></div></div>
+                                <span class="val">~1.8 kg</span>
+                            </div>
+                            <div class="comp-item highlight">
+                                <span class="label">Your Digital session</span>
+                                <div class="bar-bg"><div class="bar-fill green" id="userCompBar" style="width: 2%"></div></div>
+                                <span class="val" id="userCompVal">0.0g</span>
+                            </div>
+                        </div>
+                        <p class="explanation">While your digital footprint is small compared to transport, it's the fastest-growing sector globally. Keep it green, Hero!</p>
+                    </div>
+
+                    <div class="site-tracking-panel">
+                        <h3 class="section-heading small">SECTOR ANALYSIS (Site Breakdown)</h3>
+                        <div class="table-container">
+                            <table id="siteStatsTable">
+                                <thead>
+                                    <tr><th>DOMAIN</th><th>TIME</th><th>CO₂e</th><th>RANK</th></tr>
+                                </thead>
+                                <tbody id="siteStatsBody">
+                                    <!-- Data injected here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="system-footer">
+            <div class="scanlines"></div>
+            <p>&copy; 2026 ECOARCADE INTEL // REGIONAL NODE: EAST AFRICA // SECURE CONNECTION</p>
+        </footer>
+    </div>
+    <script src="dashboard.js"></script>
+</body>
+</html>

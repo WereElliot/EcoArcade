@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "question": "Which action reduces your digital carbon footprint?",
+    "options": ["Walking instead of driving", "Streaming 4K video", "Using cloud storage"],
+    "correctAnswer": "Walking instead of driving",
+    "points": 10,
+    "explanation": "Walking produces zero emissions compared to driving. Streaming 4K and cloud storage both consume significant energy."
+  },
+  {
+    "id": 2,
+    "question": "How many grams of CO₂ does streaming 1 hour of video produce on average?",
+    "options": ["50-100g", "200-400g", "1kg"],
+    "correctAnswer": "200-400g",
+    "points": 10,
+    "explanation": "Streaming video is energy-intensive. Higher quality = higher emissions. 200-400g per hour is typical."
+  },
+  {
+    "id": 3,
+    "question": "What's the most eco-friendly way to travel to work?",
+    "options": ["Cycling or walking", "Electric car", "Public transit"],
+    "correctAnswer": "Cycling or walking",
+    "points": 10,
+    "explanation": "Zero-emission transport is the best option. Public transit is second, then electric vehicles."
+  },
+  {
+    "id": 4,
+    "question": "Which streaming service is typically most energy-efficient?",
+    "options": ["4K video streaming", "SD quality streaming", "They're all the same"],
+    "correctAnswer": "SD quality streaming",
+    "points": 10,
+    "explanation": "Lower resolution = less data transferred = less energy consumed. Consider reducing quality when possible."
+  },
+  {
+    "id": 5,
+    "question": "How can you reduce energy consumption while working online?",
+    "options": ["Use dark mode", "Close unnecessary tabs", "Both of the above"],
+    "correctAnswer": "Both of the above",
+    "points": 15,
+    "explanation": "Dark mode uses less power on OLED screens, and fewer tabs = less processing power and memory usage."
+  },
+  {
+    "id": 6,
+    "question": "What's a server's typical annual carbon footprint?",
+    "options": ["50 tons CO₂", "500 tons CO₂", "5000 tons CO₂"],
+    "correctAnswer": "500 tons CO₂",
+    "points": 10,
+    "explanation": "Large data centers produce hundreds of tons of CO₂ annually. Data efficiency matters!"
+  },
+  {
+    "id": 7,
+    "question": "Which reduces carbon emissions from online shopping?",
+    "options": ["Buy more items per order", "Express shipping", "Standard shipping"],
+    "correctAnswer": "Buy more items per order",
+    "points": 10,
+    "explanation": "Consolidating orders reduces the number of delivery trips, saving fuel and emissions per item."
+  },
+  {
+    "id": 8,
+    "question": "How much CO₂ is produced per email with attachments?",
+    "options": ["0.1g", "1g", "10g"],
+    "correctAnswer": "1g",
+    "points": 10,
+    "explanation": "A typical email produces 0.5-1g CO₂. Larger attachments increase this significantly."
+  },
+  {
+    "id": 9,
+    "question": "What's the carbon cost of hosting a website annually?",
+    "options": ["5-10 kg CO₂", "50-100 kg CO₂", "5-10 tons CO₂"],
+    "correctAnswer": "50-100 kg CO₂",
+    "points": 10,
+    "explanation": "Website hosting generates emissions. Efficient hosting and optimized code help reduce this."
+  },
+  {
+    "id": 10,
+    "question": "Which tech habit saves the most carbon daily?",
+    "options": ["Reducing video streaming time", "Using WiFi instead of 4G", "Turning off notifications"],
+    "correctAnswer": "Reducing video streaming time",
+    "points": 15,
+    "explanation": "Video streaming is the most energy-intensive activity. Even small reductions have big impact."
+  }
+]
