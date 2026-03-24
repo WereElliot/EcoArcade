@@ -3,154 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoArcade - Global Hero Dashboard</title>
+    <title>EcoArcade Dashboard</title>
+    <link rel="icon" type="image/png" href="../assets/icons/icon48.png">
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <header class="dashboard-header">
-            <div class="logo-area">
-                <h1 class="glitch" data-text="ECOARCADE">ECOARCADE</h1>
-                <p class="tagline">ENVIRONMENTAL INTEL COMMAND // v1.0.0</p>
+    <div class="dashboard-shell">
+        <header class="dashboard-topbar">
+            <div class="topbar-start">
+                <button
+                    id="sidebarToggleBtn"
+                    class="menu-toggle"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="sidebarMenu">
+                    <span class="menu-toggle-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Toggle navigation menu</span>
+                </button>
+
+                <div class="topbar-copy">
+                    <button
+                        id="brandHomeBtn"
+                        class="brand-lockup brand-home-btn"
+                        type="button"
+                        aria-label="Go to home section">
+                        <img class="brand-logo" src="../assets/icons/logo-wordmark.png" alt="EcoArcade">
+                    </button>
+                </div>
             </div>
-            <div class="user-summary">
-                <div class="summary-item">
-                    <span class="label">STATUS:</span>
-                    <span class="value online">ACTIVE</span>
+
+            <div class="topbar-end">
+                <div class="topbar-status" id="topbarStatusPanel" aria-label="Dashboard status">
+                    <div class="status-row" title="TRACK">
+                        <span class="status-key">Tracking</span>
+                        <strong class="status-row-value live" id="trackingStatus">Active</strong>
+                    </div>
+                    <div class="status-row" title="RANK">
+                        <span class="status-key">Rank</span>
+                        <strong class="status-row-value" id="currentRank" data-rank="recruit">Recruit</strong>
+                    </div>
+                    <div class="status-row" title="POINTS">
+                        <span class="status-key">Eco Points</span>
+                        <strong class="status-row-value" id="topbarPoints">0</strong>
+                    </div>
                 </div>
-                <div class="summary-item">
-                    <span class="label">RANK:</span>
-                    <span class="value" id="currentRank">RECRUIT</span>
-                </div>
+
+                <button id="themeToggleBtn" class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to light mode" title="Switch to light mode">
+                    <span class="theme-toggle-icon" aria-hidden="true">&#9790;</span>
+                    <span class="sr-only">Toggle light and dark mode</span>
+                </button>
+
+                <button id="topbarProfileToggleBtn" class="profile-toggle" type="button" aria-expanded="false" aria-controls="topbarStatusPanel" aria-label="Toggle tracking, rank, and points summary" title="Toggle tracking, rank, and points summary">
+                    <span class="profile-toggle-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Toggle tracking, rank, and points summary</span>
+                </button>
             </div>
         </header>
 
-        <main class="dashboard-main">
-            <!-- LEVEL 1: GLOBAL DATA -->
-            <section class="data-level global-level">
-                <h2 class="section-heading neon-blue">GLOBAL IMPACT (37.1 Gt CO₂e)</h2>
-                <div class="content-box">
-                    <div class="data-grid">
-                        <div class="stats-table-container">
-                            <h3>Sector Breakdown (Annual)</h3>
-                            <table class="arcade-table">
-                                <thead>
-                                    <tr><th>Sector</th><th>Emissions</th><th>%</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>Energy/Heat</td><td>27.1 Gt</td><td>73%</td></tr>
-                                    <tr><td>Agriculture</td><td>6.7 Gt</td><td>18%</td></tr>
-                                    <tr><td>Industry</td><td>1.9 Gt</td><td>5%</td></tr>
-                                    <tr><td>Waste</td><td>1.1 Gt</td><td>3%</td></tr>
-                                    <tr class="highlight-row"><td>Digital Sector</td><td>~1.4 Gt</td><td>~4%</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="chart-container">
-                            <h3>Historical Trend (2000-2020)</h3>
-                            <div class="bar-chart-vertical">
-                                <div class="bar-v" style="height: 60%" title="2000: 25Gt"></div>
-                                <div class="bar-v" style="height: 75%" title="2010: 33Gt"></div>
-                                <div class="bar-v" style="height: 95%" title="2020: 37Gt"></div>
-                            </div>
-                            <p class="chart-label">Emissions have increased by ~48% since 2000. Digital activities now rival the aviation industry's footprint.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+        <div class="dashboard-layout">
+            <aside class="sidebar" id="sidebarMenu">
+                <nav id="sidebarNav" class="sidebar-nav" aria-label="Dashboard sections">
+                    <a class="nav-link active" href="#home" data-section-link="home">
+                        <span class="nav-label">Home</span>
+                    </a>
+                    <a class="nav-link" href="#insights" data-section-link="insights">
+                        <span class="nav-label">Insights</span>
+                    </a>
+                    <a class="nav-link" href="#sites" data-section-link="sites">
+                        <span class="nav-label">Sites</span>
+                    </a>
+                    <a class="nav-link" href="#context" data-section-link="context">
+                        <span class="nav-label">Context</span>
+                    </a>
+                </nav>
+            </aside>
 
-            <!-- LEVEL 2: REGIONAL DATA (KENYA/EAST AFRICA) -->
-            <section class="data-level regional-level">
-                <h2 class="section-heading neon-magenta">REGIONAL ANALYSIS (EAST AFRICA)</h2>
-                <div class="content-box">
-                    <div class="data-grid">
-                        <div class="stats-table-container">
-                            <h3>Kenya Sector Breakdown</h3>
-                            <table class="arcade-table">
-                                <thead>
-                                    <tr><th>Category</th><th>Emissions</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>Agriculture</td><td>~58%</td></tr>
-                                    <tr><td>Transport</td><td>~13%</td></tr>
-                                    <tr><td>Electricity</td><td>~7%</td></tr>
-                                    <tr><td>Waste/Other</td><td>~22%</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="renewable-box">
-                            <h3>Renewable Energy Share (Kenya)</h3>
-                            <div class="stat-large neon-green">~90%</div>
-                            <p>Powered by: Geothermal, Hydro, Wind, Solar.</p>
-                            <div class="progress-container">
-                                <div class="progress-bar green-bar" style="width: 90%"></div>
-                            </div>
-                            <p class="explanation">Kenya is a global leader in green energy. Most digital carbon here comes from devices and data centers elsewhere.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <main class="dashboard-main">
+                <section class="panel landing-intro">
+                    <h1 class="landing-title">Digital carbon awareness</h1>
+                    <p class="landing-text"><b>EcoArcade</b> is a Browser extension that delivers systematic quantification of Digital or browsing-related carbon emissions.<br> It isolates key determinants of digital footprint, applies structured analytic feedback, and employs a controlled gamification model-points, thresholds, and milestones to support and create awareness of the measurable adoption of lower-impact digital behaviors..</p>
+                </section>
 
-            <!-- LEVEL 3: USER DATA (DIGITAL FOOTPRINT) -->
-            <section class="data-level user-level">
-                <h2 class="section-heading neon-green">YOUR DIGITAL MISSION</h2>
-                <div class="content-box">
-                    <div class="user-stats-hero">
-                        <div class="hero-stat">
-                            <h3>YOUR DIGITAL TOTAL</h3>
-                            <div class="stat-large" id="totalCO2">0.00g</div>
-                            <p>CO₂e Emitted this session</p>
+                <section class="panel home-panel" id="home" data-section="home">
+                    <div class="panel-header home-header">
+                        <div>
+                            <h2>Watch a short explainer on digital carbon emissions</h2>
+                            <p class="hero-text">Each visit starts with a relevant YouTube video to sensitise users on how streaming, cloud services, and data centers contribute to emissions.</p>
                         </div>
-                        <div class="hero-stat">
-                            <h3>HERO POINTS</h3>
-                            <div class="stat-large neon-magenta" id="totalPoints">0</div>
-                            <p>XP earned via quizzes</p>
+                        <button id="refreshVideoBtn" class="action-btn" type="button">Load another video</button>
+                    </div>
+
+                    <div class="video-card">
+                        <div class="video-frame-wrap">
+                            <button id="loadVideoBtn" class="video-poster" type="button" aria-label="Play awareness video">
+                                <img id="videoThumbnail" class="video-thumbnail" src="" alt="Selected awareness video thumbnail">
+                                <span class="video-play-badge">Play video</span>
+                            </button>
+                            <iframe
+                                id="awarenessVideo"
+                                class="video-frame hidden"
+                                title="Digital carbon awareness video"
+                                src=""
+                                loading="lazy"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="video-meta">
+                            <p class="video-label">Now playing</p>
+                            <h3 id="videoTitle">Loading video...</h3>
+                            <p id="videoDescription" class="video-description">Picking a relevant explainer from YouTube.</p>
+                            <p class="video-hint">The video loads only when you press play.</p>
+                            <a id="videoLink" class="video-link" href="https://www.youtube.com" target="_blank" rel="noreferrer">Watch on YouTube</a>
                         </div>
                     </div>
 
-                    <div class="comparison-section">
-                        <h3>IMPACT COMPARISON</h3>
-                        <div class="comparison-bar">
-                            <div class="comp-item">
-                                <span class="label">Global Avg (Daily)</span>
-                                <div class="bar-bg"><div class="bar-fill blue" style="width: 100%"></div></div>
-                                <span class="val">~12.5 kg</span>
-                            </div>
-                            <div class="comp-item">
-                                <span class="label">Kenya Avg (Daily)</span>
-                                <div class="bar-bg"><div class="bar-fill magenta" style="width: 15%"></div></div>
-                                <span class="val">~1.8 kg</span>
-                            </div>
-                            <div class="comp-item highlight">
-                                <span class="label">Your Digital session</span>
-                                <div class="bar-bg"><div class="bar-fill green" id="userCompBar" style="width: 2%"></div></div>
-                                <span class="val" id="userCompVal">0.0g</span>
-                            </div>
+                    <div class="hero-panel">
+                        <div>
+                            <p class="section-kicker">Your impact summary</p>
+                            <h2 id="impactHeadline">Your footprint is still light.</h2>
+                            <p id="impactSummary" class="hero-text">Browse as usual and check back after a few minutes of activity.</p>
                         </div>
-                        <p class="explanation">While your digital footprint is small compared to transport, it's the fastest-growing sector globally. Keep it green, Hero!</p>
+                        <div class="hero-chip" id="impactChip">Low impact</div>
                     </div>
 
-                    <div class="site-tracking-panel">
-                        <h3 class="section-heading small">SECTOR ANALYSIS (Site Breakdown)</h3>
-                        <div class="table-container">
-                            <table id="siteStatsTable">
-                                <thead>
-                                    <tr><th>DOMAIN</th><th>TIME</th><th>CO₂e</th><th>RANK</th></tr>
-                                </thead>
-                                <tbody id="siteStatsBody">
-                                    <!-- Data injected here -->
-                                </tbody>
-                            </table>
+                    <div class="stats-grid">
+                        <button
+                            id="totalCarbonCard"
+                            class="stat-card stat-card-action"
+                            type="button"
+                            title="Jump to the sites section">
+                            <span class="stat-label">Total carbon tracked</span>
+                            <strong class="stat-value" id="totalCO2">0.00g</strong>
+                            <span class="stat-note">Estimated across tracked browsing</span>
+                        </button>
+                        <button
+                            id="ecoPointsCard"
+                            class="stat-card stat-card-action accent"
+                            type="button"
+                            title="Open the EcoArcade popup">
+                            <span class="stat-label">Eco points</span>
+                            <strong class="stat-value" id="totalPoints">0</strong>
+                            <span class="stat-note" id="nextBadgeText">Next badge: <span class="rank-token" data-rank="eco-rookie">Eco Rookie</span> at 100 points</span>
+                        </button>
+                        <button
+                            id="trackedSitesCard"
+                            class="stat-card stat-card-action"
+                            type="button"
+                            title="Jump to the sites section">
+                            <span class="stat-label">Sites tracked</span>
+                            <strong class="stat-value" id="trackedSites">0</strong>
+                            <span class="stat-note">Domains with recorded activity</span>
+                        </button>
+                    </div>
+
+                </section>
+
+                <section class="panel" id="insights" data-section="insights">
+                    <div class="panel-header">
+                        <div>
+                            <p class="section-kicker">Insights</p>
+                            <h2>What stands out in your data</h2>
                         </div>
                     </div>
-                </div>
-            </section>
-        </main>
 
-        <footer class="system-footer">
-            <div class="scanlines"></div>
-            <p>&copy; 2026 ECOARCADE INTEL // REGIONAL NODE: EAST AFRICA // SECURE CONNECTION</p>
-        </footer>
+                    <div class="insights-grid">
+                        <button
+                            id="topSiteCard"
+                            class="insight-card insight-card-action"
+                            type="button"
+                            title="Jump to the sites section">
+                            <span class="insight-label">Highest-impact site</span>
+                            <strong class="insight-value" id="topSiteName">No data yet</strong>
+                            <p class="insight-note" id="topSiteDetails">Tracked sites will appear here once you have browsing activity.</p>
+                        </button>
+                        <button
+                            id="milestoneCard"
+                            class="insight-card insight-card-action"
+                            type="button"
+                            title="Open the EcoArcade quiz popup">
+                            <span class="insight-label">Next milestone</span>
+                            <strong class="insight-value" id="milestoneTitle" data-rank="eco-rookie">Eco Rookie</strong>
+                            <p class="insight-note" id="milestoneDetails">You need 100 points to unlock your first badge.</p>
+                        </button>
+                        <button
+                            id="comparisonCard"
+                            class="insight-card insight-card-action"
+                            type="button"
+                            title="Jump to your tracked browsing comparison">
+                            <span class="insight-label">Comparison</span>
+                            <strong class="insight-value" id="comparisonHeadline">Well below a typical daily footprint</strong>
+                            <p class="insight-note" id="comparisonText">Your tracked browsing is tiny compared with average total daily emissions.</p>
+                        </button>
+                    </div>
+
+                    <div class="comparison-list">
+                        <div class="comparison-row">
+                            <div class="comparison-meta">
+                                <span class="comparison-label">Global average emissions per day</span>
+                                <span class="comparison-value">~12.5 kg</span>
+                            </div>
+                            <div class="bar-track"><div class="bar-fill blue" style="width: 100%"></div></div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-meta">
+                                <span class="comparison-label">Kenya average emissions per day</span>
+                                <span class="comparison-value">~1.8 kg</span>
+                            </div>
+                            <div class="bar-track"><div class="bar-fill magenta" style="width: 15%"></div></div>
+                        </div>
+                        <div class="comparison-row highlight" id="userComparisonRow">
+                            <div class="comparison-meta">
+                                <span class="comparison-label">Your tracked browsing</span>
+                                <span class="comparison-value" id="userCompVal">0.00g</span>
+                            </div>
+                            <div class="bar-track"><div class="bar-fill green" id="userCompBar" style="width: 2%"></div></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel" id="sites" data-section="sites">
+                    <div class="panel-header">
+                        <div>
+                            <p class="section-kicker">Sites</p>
+                            <h2>Where your tracked impact comes from</h2>
+                        </div>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table class="site-table" id="siteStatsTable">
+                            <thead>
+                                <tr>
+                                    <th>Domain</th>
+                                    <th>Time spent</th>
+                                    <th>Estimated CO2</th>
+                                    <th>Impact level</th>
+                                </tr>
+                            </thead>
+                            <tbody id="siteStatsBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="context-grid" id="context" data-section="context">
+                    <article class="panel context-panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="section-kicker">Context</p>
+                                <h2>Global context</h2>
+                            </div>
+                        </div>
+                        <p class="context-lead">Global emissions reached roughly 37.1 Gt CO2e, and digital activity contributes an estimated 1.4 Gt.</p>
+                        <table class="context-table">
+                            <thead>
+                                <tr><th>Sector</th><th>Emissions</th><th>Share</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Energy and heat</td><td>27.1 Gt</td><td>73%</td></tr>
+                                <tr><td>Agriculture</td><td>6.7 Gt</td><td>18%</td></tr>
+                                <tr><td>Industry</td><td>1.9 Gt</td><td>5%</td></tr>
+                                <tr><td>Waste</td><td>1.1 Gt</td><td>3%</td></tr>
+                                <tr class="highlight-row"><td>Digital sector</td><td>~1.4 Gt</td><td>~4%</td></tr>
+                            </tbody>
+                        </table>
+                    </article>
+
+                    <article class="panel context-panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="section-kicker">Context</p>
+                                <h2>Kenya and East Africa</h2>
+                            </div>
+                        </div>
+                        <p class="context-lead">Kenya's grid is heavily renewable, so much of your digital footprint often sits in devices, networks, and data centers outside the region.</p>
+                        <div class="renewable-stat">
+                            <span class="renewable-label">Renewable electricity share</span>
+                            <strong class="renewable-value">~90%</strong>
+                        </div>
+                        <div class="bar-track"><div class="bar-fill green" style="width: 90%"></div></div>
+                        <table class="context-table compact">
+                            <thead>
+                                <tr><th>Category</th><th>Estimated share</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Agriculture</td><td>~58%</td></tr>
+                                <tr><td>Transport</td><td>~13%</td></tr>
+                                <tr><td>Electricity</td><td>~7%</td></tr>
+                                <tr><td>Waste and other</td><td>~22%</td></tr>
+                            </tbody>
+                        </table>
+                    </article>
+                </section>
+
+                <section class="home-explainer" aria-labelledby="explainerTitle">
+                    <div class="explainer-header">
+                        <div>
+                            <p class="section-kicker">Explainer</p>
+                            <h3 id="explainerTitle">The Invisible Trail: What is a digital carbon footprint?</h3>
+                        </div>
+                        <p class="explainer-quote">"Digital sustainability isn't about using the internet less, it's about using it better."</p>
+                    </div>
+
+                    <p class="explainer-lead">Every time you click, stream, or scroll, you're triggering a physical chain reaction. While the internet feels like it exists in "the cloud," it actually lives in massive, energy-hungry data centers, travels through thousands of miles of cables, and powers up the device in your hand.</p>
+
+                    <p class="section-kicker cycle-kicker">The Lifecycle of a Click</p>
+                    <div class="explainer-grid explainer-cycle">
+                        <article class="explainer-card cycle-card">
+                            <p class="cycle-stage">Stage 1</p>
+                            <h4>The screen</h4>
+                            <p>Your laptop, phone, or monitor starts the request when you click, scroll, or press play. It uses power to stay on, stay bright, render content, and remain connected to the web.</p>
+                        </article>
+
+                        <div class="cycle-arrow" aria-hidden="true">
+                            <span class="cycle-arrow-line"></span>
+                        </div>
+
+                        <article class="explainer-card cycle-card">
+                            <p class="cycle-stage">Stage 2</p>
+                            <h4>The delivery</h4>
+                            <p>That request travels through Wi-Fi, mobile networks, routers, and fiber-optic cables. Moving data across this delivery system uses electricity at many points along the way.</p>
+                        </article>
+
+                        <div class="cycle-arrow" aria-hidden="true">
+                            <span class="cycle-arrow-line"></span>
+                        </div>
+
+                        <article class="explainer-card cycle-card">
+                            <p class="cycle-stage">Stage 3</p>
+                            <h4>The engine room</h4>
+                            <p>The request reaches servers in data centers, where information is stored, processed, and sent back. These facilities run all day and night and need substantial power for computing and cooling.</p>
+                        </article>
+                    </div>
+                    <p class="cycle-return">The result then travels back through the network to your screen, completing the cycle.</p>
+
+                    <div class="explainer-detail-grid">
+                        <article class="explainer-card wide">
+                            <p class="section-kicker">Why It Matters</p>
+                            <p>Individually, a single email or a search query has a tiny footprint. But with billions of people online, the internet now accounts for about 3.7% of global greenhouse gas emissions, roughly the same as the entire airline industry.</p>
+
+                            <p class="section-kicker explainer-subkicker">The Good News</p>
+                            <p>Your digital footprint is one of the easiest habits to optimize. By choosing green hosts, lowering video resolution when it is not needed, and cleaning out old cloud storage, you can significantly lighten your load on the planet.</p>
+                        </article>
+
+                        <article class="explainer-card metrics-card">
+                            <p class="section-kicker">By the Numbers</p>
+                            <div class="table-wrap">
+                                <table class="context-table compact explainer-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Action</th>
+                                            <th>Estimated carbon impact</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1 hour of streaming</td>
+                                            <td>~50g to 150g of CO2</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sending an email</td>
+                                            <td>~4g of CO2, up to 50g with large attachments</td>
+                                        </tr>
+                                        <tr>
+                                            <td>One web search</td>
+                                            <td>~0.2g to 1.4g of CO2</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            </main>
+        </div>
     </div>
     <script src="dashboard.js"></script>
 </body>

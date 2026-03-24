@@ -43,7 +43,7 @@
    ✓ Real-time updates in popup dashboard
 
 🎮 GAMIFIED QUIZ SYSTEM
-   ✓ 10 sustainability education questions
+   ✓  sustainability education questions
    ✓ Points earned per correct answer (10-15 points)
    ✓ Shuffle options for replay value
    ✓ Educational explanations for each question

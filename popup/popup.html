@@ -3,108 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoArcade 1.0.0</title>
+    <title>EcoArcade 1.1.1</title>
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
     <div id="app-container">
-        <!-- New Alert Banner for High Carbon Sites -->
         <div id="highCarbonAlert" class="alert-banner hidden">
             <div class="alert-content">
-                <span class="alert-icon">⚠️</span>
+                <span class="alert-icon" aria-hidden="true">!</span>
                 <div class="alert-text">
-                    <p class="alert-title">HIGH CARBON SECTOR DETECTED</p>
-                    <p id="funFactText" class="alert-fact">Loading fun fact...</p>
+                    <p class="alert-title">High-impact site detected</p>
+                    <p id="funFactText" class="alert-fact">Sites in carbon-heavy sectors can create more emissions over time.</p>
                 </div>
             </div>
         </div>
 
-        <header class="arcade-header">
-            <div class="header-content">
-                <div class="logo-container">
-                    <h1 class="arcade-title">ECO<span class="highlight">ARCADE</span></h1>
-                    <p class="subtitle">v1.0.0 - Digital Carbon Hero</p>
-                </div>
-                <div class="mascot-container">
-                    <div class="mascot-pixel">
-                        <div class="eye left"></div>
-                        <div class="eye right"></div>
-                        <div class="mouth"></div>
-                    </div>
-                </div>
+        <header class="app-header">
+            <div>
+                <p class="eyebrow">EcoArcade</p>
+                <h1 class="app-title">Track your Digital Carbon footprint</h1>
+                <p class="app-subtitle">See the current site, your running carbon estimate,Answer awareness Questions to earn points and the fastest next step.</p>
+            </div>
+            <div class="header-badge">
+                <span class="header-badge-label">Status</span>
+                <span class="header-badge-value">Live</span>
             </div>
         </header>
 
-        <main class="arcade-main">
-            <!-- Tracker Section -->
-            <section class="tracker-panel">
-                <h3 class="panel-title">CURRENT SECTOR</h3>
-                <div class="tracker-grid">
-                    <div class="tracker-item">
-                        <span class="label">SITE</span>
-                        <span class="value" id="currentSite">Scanning...</span>
-                    </div>
-                    <div class="tracker-item">
-                        <span class="label">TIME</span>
-                        <span class="value" id="currentTime">0m</span>
-                    </div>
-                    <div class="tracker-item">
-                        <span class="label">EMISSIONS</span>
-                        <span class="value warning" id="currentEmissions">0g</span>
-                    </div>
+        <main class="app-main">
+            <section class="hero-panel">
+                <div class="hero-copy">
+                    <p class="section-kicker">Current activity</p>
+                    <h2 id="currentSite">Scanning current tab...</h2>
+                    <p id="focusMessage" class="hero-message">Checking this page's estimated footprint.</p>
+                </div>
+                <div id="impactPill" class="impact-pill neutral">Analyzing</div>
+            </section>
+
+            <section class="metrics-panel">
+                <div class="metric-card">
+                    <span class="metric-label">Time on this site</span>
+                    <strong class="metric-value" id="currentTime">0m</strong>
+                    <span class="metric-note">Tracked on the active tab</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Estimated CO2 on this site</span>
+                    <strong class="metric-value" id="currentEmissions">0.00g</strong>
+                    <span class="metric-note">Based on your current session</span>
                 </div>
             </section>
 
-            <!-- Stats Grid -->
-            <section class="stats-grid">
-                <div class="stat-card neon-blue">
-                    <h2 class="stat-label">TOTAL CARBON</h2>
-                    <div class="stat-value" id="totalCO2">0.00g</div>
-                    <div class="stat-unit">CO₂e emitted</div>
+            <section class="totals-panel">
+                <div class="totals-header">
+                    <div>
+                        <p class="section-kicker">Your progress</p>
+                        <h3>Running totals</h3>
+                    </div>
+                    <button id="refreshBtn" class="secondary-btn" type="button">Refresh</button>
                 </div>
-                
-                <div class="stat-card neon-magenta">
-                    <h2 class="stat-label">HERO POINTS</h2>
-                    <div class="stat-value" id="totalPoints">0</div>
-                    <div class="stat-unit">XP earned</div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Total carbon tracked</span>
+                        <strong class="stat-value" id="totalCO2">0.00g</strong>
+                        <span class="stat-note">Across all tracked browsing</span>
+                    </div>
+                    <div class="stat-card accent">
+                        <span class="stat-label">Eco points</span>
+                        <strong class="stat-value" id="totalPoints">0</strong>
+                        <span class="stat-note" id="rankLabel">Rank: <span class="rank-token" data-rank="recruit">Recruit</span></span>
+                    </div>
+                </div>
+
+                <div class="progress-card">
+                    <div class="progress-copy">
+                        <span class="progress-label">Next milestone</span>
+                        <strong id="nextBadgeText">Reach 100 points for <span class="rank-token" data-rank="eco-rookie">Eco Rookie</span></strong>
+                    </div>
+                    <span id="pointsToNextBadge" class="progress-remaining">100 points to go</span>
                 </div>
             </section>
 
-            <!-- Quiz Section -->
             <section class="quiz-section" id="quizContainer">
-                <div class="quiz-header">
-                    <h3 class="panel-title">KNOWLEDGE BATTLE</h3>
-                    <span class="points-badge">+10 XP</span>
+                <div class="section-header">
+                    <div>
+                        <p class="section-kicker">Quick action</p>
+                        <h3>Answer one eco quiz</h3>
+                    </div>
+                    <span class="points-badge" id="questionRewardBadge"><span class="rank-token" data-rank="recruit">Recruit</span> <span class="reward-divider">|</span> <span>Easy</span> <span class="reward-divider">|</span> <span>+10 XP</span></span>
                 </div>
                 <div id="quizContent">
-                    <p class="question-text" id="questionText">Loading mission data...</p>
-                    <div class="options-grid" id="optionsGrid">
-                        <!-- Options injected here -->
-                    </div>
+                    <p class="question-text" id="questionText">Loading question...</p>
+                    <div class="options-grid" id="optionsGrid"></div>
                 </div>
                 <div id="quizResult" class="hidden">
                     <p class="result-msg" id="resultMsg"></p>
-                    <button class="arcade-btn small" id="nextQuestionBtn">NEXT MISSION</button>
+                    <button class="primary-btn small" id="nextQuestionBtn" type="button">Next question</button>
                 </div>
             </section>
 
-            <!-- Mini Badges -->
             <section class="badges-section">
-                <h2 class="section-title">ACHIEVEMENTS</h2>
+                <div class="section-header compact">
+                    <div>
+                        <p class="section-kicker">Unlocked</p>
+                        <h3>Achievements</h3>
+                    </div>
+                </div>
                 <div id="badgesContainer" class="badges-list">
-                    <p class="no-badges">No badges yet.</p>
+                    <p class="no-badges">No badges unlocked yet.</p>
                 </div>
             </section>
-            
-            <div class="dashboard-link-container">
-                <button id="openDashboardBtn" class="arcade-btn full-width">OPEN FULL DASHBOARD</button>
+
+            <div class="actions-row">
+                <button id="openDashboardBtn" class="primary-btn" type="button">Open full dashboard</button>
             </div>
         </main>
-
-        <footer class="arcade-footer">
-            <div class="scanline"></div>
-            <p>SYSTEM STATUS: <span class="online">ONLINE</span></p>
-        </footer>
     </div>
     <script src="popup.js"></script>
 </body>

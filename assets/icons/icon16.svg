@@ -1,4 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-  <rect width="16" height="16" fill="#667eea" rx="3"/>
-  <text x="8" y="13" font-size="12" font-weight="bold" text-anchor="middle" fill="white">🌍</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">EcoArcade icon</title>
+  <rect width="128" height="128" rx="26" fill="#07181e"/>
+  <g fill="none" stroke="#5ebc67" stroke-linecap="round" stroke-linejoin="round" stroke-width="10">
+    <path d="M44 22c-16 1-26 10-31 24-4 15 0 32 12 43 8 7 20 10 28 5"/>
+    <path d="M33 36c10 10 20 23 27 38 3 5 5 11 7 17"/>
+    <path d="M72 99c5-22 13-37 25-47 14-11 35-16 58-15-7 12-12 24-16 37-5 16-12 28-24 36-10 7-23 8-35 3"/>
+    <path d="M97 64c-5 10-10 21-13 35"/>
+    <path d="M97 64c6 2 11 5 16 9"/>
+    <path d="M112 73c7-1 14 0 21 2"/>
+    <path d="M73 114c6-23 13-40 19-50"/>
+  </g>
 </svg>
