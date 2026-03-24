@@ -1,6 +1,6 @@
 # 🌍 EcoArcade - Gamified Carbon Footprint Tracker
 
-A Chrome extension that gamifies your digital carbon footprint. Track time spent on high-carbon websites, estimate CO₂ emissions, and earn points by completing sustainability quizzes.
+A extension that gamifies your digital carbon footprint. Track time spent on high-carbon websites, estimate CO₂ emissions, and earn points by completing sustainability quizzes.
 
 ## 🎮 Features
 
@@ -31,13 +31,13 @@ ecoarcade-extension/
 
 ## 🚀 Installation
 
-### Load Unpacked in Chrome
+### Load Unpacked in Edge
 
-1. Open Chrome and navigate to **chrome://extensions/**
+1. Open Edge and navigate to **Edge://extensions/**
 2. Enable **Developer mode** (toggle in top right)
 3. Click **Load unpacked**
 4. Select the `ecoarcade-extension` folder
-5. The extension will appear in your Chrome toolbar
+5. The extension will appear in your Edge toolbar
 
 ### First Run
 
@@ -55,7 +55,7 @@ Click the extension icon to open the popup and start using it!
 - Extracts domain names from visited websites
 - Tracks time spent per domain
 - Calculates CO₂ emissions using emission factors
-- Stores data in Chrome's local storage
+- Stores data in Edge's local storage
 
 ### 2. **Emission Factors (data/emissionFactors.json)**
 Each website has an associated CO₂ emission factor (grams per hour):
@@ -97,7 +97,7 @@ Each correct answer awards **10-15 points** depending on difficulty.
 
 ## 💾 Data Storage
 
-All data is stored in **Chrome's local storage** (persistent per user):
+All data is stored in **Edge's local storage** (persistent per user):
 - `totalCO2`: Total grams of CO₂ tracked
 - `totalPoints`: Total points earned from quizzes
 - `badges`: Array of earned badges
@@ -162,7 +162,7 @@ The extension requests:
 ### Extension not tracking sites
 - Ensure you've enabled the extension (visible in toolbar)
 - Check that you have the latest version loaded
-- Reload the extension at chrome://extensions/
+- Reload the extension at Edge://extensions/
 
 ### Quiz questions not appearing
 - Verify `quizQuestions.json` exists and is properly formatted
@@ -171,7 +171,7 @@ The extension requests:
 
 ### Stats not updating
 - Make sure you have the latest manifest.json
-- Clear Chrome storage: Settings → Privacy & Security → Clear browsing data
+- Clear Edge storage: Settings → Privacy & Security → Clear browsing data
 - Reload the extension
 
 ## 📝 File Details
