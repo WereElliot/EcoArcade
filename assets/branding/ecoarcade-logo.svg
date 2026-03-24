@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" role="img" aria-labelledby="title desc">
+  <title id="title">EcoArcade logo</title>
+  <desc id="desc">EcoArcade wordmark with a twin-leaf icon.</desc>
+  <g fill="none" stroke="#5ebc67" stroke-linecap="round" stroke-linejoin="round" stroke-width="7">
+    <path d="M74 18c-22 1-37 12-43 31-5 18 0 39 15 53 11 10 28 13 40 6" />
+    <path d="M57 35c12 12 24 28 33 46 3 7 6 14 8 21" />
+    <path d="M118 97c7-30 18-50 34-63 18-15 45-22 81-20-10 15-16 31-21 49-6 21-16 37-32 48-14 9-32 10-48 3" />
+    <path d="M154 52c-7 13-13 28-17 45" />
+    <path d="M154 52c8 2 16 6 23 12" />
+    <path d="M177 64c10-1 20 0 30 3" />
+    <path d="M107 116c9-34 18-57 27-71" />
+  </g>
+  <g font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">
+    <text x="258" y="74" fill="#5ebc67" text-anchor="end">Eco</text>
+    <text x="264" y="74" fill="#559c49">Arcade</text>
+  </g>
+</svg>

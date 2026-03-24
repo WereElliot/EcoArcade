@@ -1,0 +1,402 @@
+[
+  {
+    "id": "e01",
+    "difficulty": "easy",
+    "scenario": "For a long video stream at home,",
+    "correctAnswer": "Watch in standard definition",
+    "wrongAnswers": ["Watch in 4K", "Leave autoplay running afterward"],
+    "explanation": "Standard definition uses less data than 4K, so it usually cuts network and server energy use."
+  },
+  {
+    "id": "e02",
+    "difficulty": "easy",
+    "scenario": "When you need to download a large file,",
+    "correctAnswer": "Use a stable Wi-Fi connection",
+    "wrongAnswers": ["Use mobile data if possible", "Start the download on two devices at once"],
+    "explanation": "Wi-Fi is typically more energy-efficient than mobile data for large transfers, especially when the connection is stable."
+  },
+  {
+    "id": "e03",
+    "difficulty": "easy",
+    "scenario": "To keep browser energy use lower during a long work session,",
+    "correctAnswer": "Close the tabs you are not using",
+    "wrongAnswers": ["Keep every tab open all day just in case", "Refresh every open tab often"],
+    "explanation": "Unused tabs still consume memory, processor time, and background network activity."
+  },
+  {
+    "id": "e04",
+    "difficulty": "easy",
+    "scenario": "When you only need to hear a webinar or music session,",
+    "correctAnswer": "Use audio-only playback",
+    "wrongAnswers": ["Keep the full video stream on", "Open the same stream in two tabs"],
+    "explanation": "Audio-only playback usually transfers far less data than video."
+  },
+  {
+    "id": "e05",
+    "difficulty": "easy",
+    "scenario": "If you know you will watch the same training clip twice,",
+    "correctAnswer": "Download it once on Wi-Fi and reuse it",
+    "wrongAnswers": ["Restream it every time", "Play the clip on two screens together"],
+    "explanation": "Reusing a file you already downloaded avoids repeated streaming traffic."
+  },
+  {
+    "id": "e06",
+    "difficulty": "easy",
+    "scenario": "When sharing a presentation with teammates,",
+    "correctAnswer": "Send a cloud link instead of a large attachment",
+    "wrongAnswers": ["Attach the full file to every email", "Send the file in multiple formats to everyone"],
+    "explanation": "Sharing a single link avoids duplicate file transfers and repeated inbox storage."
+  },
+  {
+    "id": "e07",
+    "difficulty": "easy",
+    "scenario": "On a video call where slides matter more than faces,",
+    "correctAnswer": "Turn your camera off when it is not needed",
+    "wrongAnswers": ["Keep HD video on the whole time", "Open the call on a phone and laptop together"],
+    "explanation": "Sending live video continuously uses more bandwidth and compute than audio alone."
+  },
+  {
+    "id": "e08",
+    "difficulty": "easy",
+    "scenario": "To avoid passive streaming emissions,",
+    "correctAnswer": "Turn autoplay off",
+    "wrongAnswers": ["Let the next video start automatically", "Keep multiple streams paused in background tabs"],
+    "explanation": "Autoplay can start data-heavy playback you did not actually intend to watch."
+  },
+  {
+    "id": "e09",
+    "difficulty": "easy",
+    "scenario": "When a phone still works but the battery is weak,",
+    "correctAnswer": "Repair or replace the battery first",
+    "wrongAnswers": ["Buy a brand-new phone immediately", "Keep the old phone and buy a second new one"],
+    "explanation": "Keeping devices in service longer reduces the embodied emissions from manufacturing replacements."
+  },
+  {
+    "id": "e10",
+    "difficulty": "easy",
+    "scenario": "When reading or writing on a laptop indoors,",
+    "correctAnswer": "Lower the screen brightness to a comfortable level",
+    "wrongAnswers": ["Keep brightness at maximum", "Use an external monitor too when you do not need it"],
+    "explanation": "Display brightness can be a noticeable share of a device's power use."
+  },
+  {
+    "id": "e11",
+    "difficulty": "easy",
+    "scenario": "While cleaning up cloud storage,",
+    "correctAnswer": "Delete duplicate files you do not need",
+    "wrongAnswers": ["Keep every duplicate forever", "Upload the same folder to multiple personal accounts"],
+    "explanation": "Unnecessary duplicate storage and syncing adds avoidable digital overhead."
+  },
+  {
+    "id": "e12",
+    "difficulty": "easy",
+    "scenario": "Before uploading a batch of casual photos,",
+    "correctAnswer": "Compress or resize them when full resolution is unnecessary",
+    "wrongAnswers": ["Upload the largest originals every time", "Upload both the originals and duplicates"],
+    "explanation": "Smaller files reduce transfer, storage, and repeated sync costs."
+  },
+  {
+    "id": "e13",
+    "difficulty": "easy",
+    "scenario": "If a device will sit unused for hours,",
+    "correctAnswer": "Let it sleep or shut it down",
+    "wrongAnswers": ["Leave it fully on all day", "Keep video or music playing in the background"],
+    "explanation": "Idle devices still consume electricity, especially if the screen and apps stay active."
+  },
+  {
+    "id": "m01",
+    "difficulty": "medium",
+    "scenario": "Before publishing a photo-heavy webpage,",
+    "correctAnswer": "Compress images and serve responsive sizes",
+    "wrongAnswers": ["Upload every image at original camera size", "Use the same oversized image for every screen"],
+    "explanation": "Smaller, responsive images reduce data transfer and page-rendering cost."
+  },
+  {
+    "id": "m02",
+    "difficulty": "medium",
+    "scenario": "For a site with logos, icons, and style files used on many pages,",
+    "correctAnswer": "Cache static assets so browsers reuse them",
+    "wrongAnswers": ["Force a full download on every page load", "Duplicate the same assets under many filenames"],
+    "explanation": "Caching avoids repeated transfers of identical content."
+  },
+  {
+    "id": "m03",
+    "difficulty": "medium",
+    "scenario": "When teammates need to review the same document together,",
+    "correctAnswer": "Use one collaborative cloud document",
+    "wrongAnswers": ["Email new attachments to everyone after each edit", "Keep separate copies for every reviewer"],
+    "explanation": "Collaborative editing reduces repeated file copies and sync churn."
+  },
+  {
+    "id": "m04",
+    "difficulty": "medium",
+    "scenario": "For old files you rarely open but must keep,",
+    "correctAnswer": "Move them to a colder storage tier",
+    "wrongAnswers": ["Keep everything in high-performance storage forever", "Store the same archive in multiple hot locations"],
+    "explanation": "Cold storage is generally more efficient for infrequently accessed data."
+  },
+  {
+    "id": "m05",
+    "difficulty": "medium",
+    "scenario": "When you only need a clear meeting view and not cinema quality,",
+    "correctAnswer": "Choose standard video quality instead of the highest HD setting",
+    "wrongAnswers": ["Force the highest available resolution", "Share video from two cameras at once"],
+    "explanation": "Higher meeting resolution increases the data processed and transmitted."
+  },
+  {
+    "id": "m06",
+    "difficulty": "medium",
+    "scenario": "When improving a company website,",
+    "correctAnswer": "Remove third-party scripts and trackers you do not need",
+    "wrongAnswers": ["Add more external scripts by default", "Load several analytics tools that do the same job"],
+    "explanation": "Extra third-party requests add page weight, processing, and network traffic."
+  },
+  {
+    "id": "m07",
+    "difficulty": "medium",
+    "scenario": "Before a trip with poor connectivity,",
+    "correctAnswer": "Download maps or reference files once in advance",
+    "wrongAnswers": ["Stream the same map tiles repeatedly on mobile data", "Open the same heavy map on several devices"],
+    "explanation": "Preparing data once avoids repeated high-cost downloads later."
+  },
+  {
+    "id": "m08",
+    "difficulty": "medium",
+    "scenario": "When a phone is about to sync a huge library of raw media,",
+    "correctAnswer": "Wait for Wi-Fi before uploading",
+    "wrongAnswers": ["Force immediate upload over mobile data", "Upload the same library from several devices together"],
+    "explanation": "Large media uploads are usually better handled over efficient, stable connections."
+  },
+  {
+    "id": "m09",
+    "difficulty": "medium",
+    "scenario": "If two codecs deliver similar viewing quality,",
+    "correctAnswer": "Choose the more efficient codec",
+    "wrongAnswers": ["Choose the one that needs more bitrate", "Stream both versions to compare every time"],
+    "explanation": "More efficient codecs can maintain quality with less data transfer."
+  },
+  {
+    "id": "m10",
+    "difficulty": "medium",
+    "scenario": "On a content page with images far below the fold,",
+    "correctAnswer": "Lazy-load the media until users reach it",
+    "wrongAnswers": ["Load all heavy media immediately", "Auto-play all media on page open"],
+    "explanation": "Lazy-loading prevents unnecessary downloads for content a user may never view."
+  },
+  {
+    "id": "m11",
+    "difficulty": "medium",
+    "scenario": "When picking a format for photos on the web,",
+    "correctAnswer": "Use WebP or AVIF where appropriate",
+    "wrongAnswers": ["Prefer larger legacy formats for every image", "Export everything as oversized PNGs"],
+    "explanation": "Modern image formats often deliver the same visual quality with less data."
+  },
+  {
+    "id": "m12",
+    "difficulty": "medium",
+    "scenario": "When sending regular product updates by email,",
+    "correctAnswer": "Use a lean template instead of image-heavy layouts",
+    "wrongAnswers": ["Pack every message with large decorative media", "Send the same newsletter repeatedly to correct formatting"],
+    "explanation": "Lighter email templates reduce transfer and rendering overhead."
+  },
+  {
+    "id": "m13",
+    "difficulty": "medium",
+    "scenario": "If users often return to the same pages and assets,",
+    "correctAnswer": "Use CDN or browser caching effectively",
+    "wrongAnswers": ["Bypass caching on every request", "Rebuild and re-send unchanged assets each time"],
+    "explanation": "Caching repeated assets cuts data movement and server work."
+  },
+  {
+    "id": "h01",
+    "difficulty": "hard",
+    "scenario": "When provisioning cloud compute for a workload,",
+    "correctAnswer": "Right-size the instance to actual demand",
+    "wrongAnswers": ["Overprovision large instances just in case", "Run the job on multiple idle instances without need"],
+    "explanation": "Oversized compute wastes power even when usage stays low."
+  },
+  {
+    "id": "h02",
+    "difficulty": "hard",
+    "scenario": "For a steady stream of AI inference requests,",
+    "correctAnswer": "Batch compatible requests where latency allows",
+    "wrongAnswers": ["Process every request separately no matter what", "Duplicate the same inference across multiple services"],
+    "explanation": "Batching can improve hardware utilization and reduce wasted compute."
+  },
+  {
+    "id": "h03",
+    "difficulty": "hard",
+    "scenario": "When a smaller model gives acceptable results for a task,",
+    "correctAnswer": "Deploy the distilled or quantized model",
+    "wrongAnswers": ["Always use the largest available model", "Run both small and large models for every request"],
+    "explanation": "Smaller efficient models often reduce energy use while meeting the need."
+  },
+  {
+    "id": "h04",
+    "difficulty": "hard",
+    "scenario": "For dashboards that ask the same heavy questions every day,",
+    "correctAnswer": "Precompute common reports and aggregates",
+    "wrongAnswers": ["Rerun expensive raw queries every page view", "Duplicate analytical pipelines for the same output"],
+    "explanation": "Precomputing repeated results lowers repeated compute costs."
+  },
+  {
+    "id": "h05",
+    "difficulty": "hard",
+    "scenario": "If a database query keeps scanning entire tables,",
+    "correctAnswer": "Add indexes and tune the query plan",
+    "wrongAnswers": ["Keep the full-table scan as traffic grows", "Run the same heavy query more often"],
+    "explanation": "Efficient queries reduce processor, memory, and storage work."
+  },
+  {
+    "id": "h06",
+    "difficulty": "hard",
+    "scenario": "For a machine-learning system with slow data drift,",
+    "correctAnswer": "Retrain only when monitoring shows it is needed",
+    "wrongAnswers": ["Retrain from scratch on a fixed schedule regardless", "Launch several duplicate retraining jobs"],
+    "explanation": "Unnecessary retraining can consume large amounts of compute for little benefit."
+  },
+  {
+    "id": "h07",
+    "difficulty": "hard",
+    "scenario": "When backing up production data frequently,",
+    "correctAnswer": "Use incremental snapshots where possible",
+    "wrongAnswers": ["Create a full backup every time", "Store repeated full copies in parallel without deduplication"],
+    "explanation": "Incremental backups avoid copying unchanged data over and over."
+  },
+  {
+    "id": "h08",
+    "difficulty": "hard",
+    "scenario": "When shipping a modern web application,",
+    "correctAnswer": "Tree-shake and code-split unused JavaScript and CSS",
+    "wrongAnswers": ["Ship the full bundle to every user", "Load every feature module on first page view"],
+    "explanation": "Smaller bundles reduce transfer and client-side processing."
+  },
+  {
+    "id": "h09",
+    "difficulty": "hard",
+    "scenario": "For static content requested from many regions,",
+    "correctAnswer": "Serve it through edge caching or a CDN",
+    "wrongAnswers": ["Pull every request from one origin server", "Disable edge caching for repeat traffic"],
+    "explanation": "Serving repeated content closer to users usually reduces network distance and origin load."
+  },
+  {
+    "id": "h10",
+    "difficulty": "hard",
+    "scenario": "When configuring a live stream for a mixed audience,",
+    "correctAnswer": "Set a sensible default resolution instead of maximum quality for everyone",
+    "wrongAnswers": ["Force the highest quality for all viewers", "Stream duplicate feeds at the same time by default"],
+    "explanation": "Not every viewer needs the highest bitrate, and defaults influence total traffic."
+  },
+  {
+    "id": "h11",
+    "difficulty": "hard",
+    "scenario": "For flexible batch jobs that do not need instant results,",
+    "correctAnswer": "Shift them to lower-carbon hours when possible",
+    "wrongAnswers": ["Run them immediately during any grid peak", "Schedule duplicate jobs across time windows"],
+    "explanation": "Carbon-aware scheduling can use cleaner electricity periods without changing the result."
+  },
+  {
+    "id": "h12",
+    "difficulty": "hard",
+    "scenario": "When managing large media and backup stores,",
+    "correctAnswer": "Deduplicate repeated assets and copies",
+    "wrongAnswers": ["Keep identical files in many places without reason", "Create extra copies each time someone accesses a file"],
+    "explanation": "Deduplication reduces both storage needs and repeated data movement."
+  },
+  {
+    "id": "x01",
+    "difficulty": "expert",
+    "scenario": "When latency requirements allow flexible workload placement,",
+    "correctAnswer": "Run the workload in a region with a cleaner electricity mix",
+    "wrongAnswers": ["Ignore grid carbon intensity completely", "Duplicate the workload across high-carbon regions by default"],
+    "explanation": "Where compute runs can matter a lot because electricity carbon intensity varies by region."
+  },
+  {
+    "id": "x02",
+    "difficulty": "expert",
+    "scenario": "When choosing digital infrastructure partners,",
+    "correctAnswer": "Prefer providers with credible renewable matching and transparent reporting",
+    "wrongAnswers": ["Rely only on vague marketing claims", "Treat generic offsets as equal to transparent operational improvements"],
+    "explanation": "Transparent energy sourcing and reporting are stronger signals than vague sustainability claims."
+  },
+  {
+    "id": "x03",
+    "difficulty": "expert",
+    "scenario": "When servers still meet performance needs with targeted upgrades,",
+    "correctAnswer": "Extend their life with selective component replacements",
+    "wrongAnswers": ["Replace the full fleet early without need", "Buy parallel spare fleets for the same workload"],
+    "explanation": "Extending hardware life can lower embodied emissions from manufacturing new systems."
+  },
+  {
+    "id": "x04",
+    "difficulty": "expert",
+    "scenario": "When building an AI assistant with tasks of mixed complexity,",
+    "correctAnswer": "Route simple requests to a smaller model",
+    "wrongAnswers": ["Send every request to the largest model", "Run multiple models for every prompt regardless of need"],
+    "explanation": "Model routing can cut compute use while keeping high-quality results where they matter most."
+  },
+  {
+    "id": "x05",
+    "difficulty": "expert",
+    "scenario": "When trying to lower service emissions over time,",
+    "correctAnswer": "Measure grams of CO2e per request and optimize the hotspots",
+    "wrongAnswers": ["Track only uptime and ignore carbon data", "Assume all requests have the same environmental cost"],
+    "explanation": "What gets measured can be improved, and request-level hotspots often dominate emissions."
+  },
+  {
+    "id": "x06",
+    "difficulty": "expert",
+    "scenario": "When tuning autoscaling for a service with quiet overnight periods,",
+    "correctAnswer": "Reduce always-on minimum capacity where safe",
+    "wrongAnswers": ["Keep large idle minimum capacity all day", "Scale up duplicate instances before demand appears"],
+    "explanation": "Idle capacity can quietly waste energy if the floor is set too high."
+  },
+  {
+    "id": "x07",
+    "difficulty": "expert",
+    "scenario": "For landing pages that aim to load quickly and waste less energy,",
+    "correctAnswer": "Disable hero-video autoplay by default",
+    "wrongAnswers": ["Auto-play large background video on every visit", "Load several hidden videos before user interaction"],
+    "explanation": "Auto-playing media starts heavy transfers even for visitors who may not need them."
+  },
+  {
+    "id": "x08",
+    "difficulty": "expert",
+    "scenario": "For a mostly static content site with periodic updates,",
+    "correctAnswer": "Use prerendering or incremental static regeneration",
+    "wrongAnswers": ["Server-render every request even when content rarely changes", "Rebuild identical pages for every visitor"],
+    "explanation": "Serving prebuilt content avoids unnecessary per-request compute."
+  },
+  {
+    "id": "x09",
+    "difficulty": "expert",
+    "scenario": "For educational media watched repeatedly inside one organization,",
+    "correctAnswer": "Serve it from local cache or nearby edge storage when practical",
+    "wrongAnswers": ["Force every playback to pull the full remote stream", "Duplicate the same long stream from multiple remote sources"],
+    "explanation": "Local or edge reuse can reduce repeated long-distance data delivery."
+  },
+  {
+    "id": "x10",
+    "difficulty": "expert",
+    "scenario": "When defining backup and log retention,",
+    "correctAnswer": "Keep only what policy and operations require",
+    "wrongAnswers": ["Retain every snapshot and log forever", "Copy all retained data into several permanent hot tiers"],
+    "explanation": "Retention discipline reduces long-term storage overhead and needless duplication."
+  },
+  {
+    "id": "x11",
+    "difficulty": "expert",
+    "scenario": "When designing a multi-region data pipeline,",
+    "correctAnswer": "Minimize unnecessary duplicate transfers between regions",
+    "wrongAnswers": ["Move the same data repeatedly across regions", "Replicate every intermediate dataset everywhere by default"],
+    "explanation": "Cross-region transfer adds network, storage, and processing overhead."
+  },
+  {
+    "id": "x12",
+    "difficulty": "expert",
+    "scenario": "When solving a new AI task with a strong existing model available,",
+    "correctAnswer": "Fine-tune or adapt the existing model first",
+    "wrongAnswers": ["Train a large model from scratch immediately", "Launch multiple full training runs before testing reuse"],
+    "explanation": "Reusing capable pretrained models can avoid the large compute cost of starting from zero."
+  }
+]
