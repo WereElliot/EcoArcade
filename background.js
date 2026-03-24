@@ -5,12 +5,21 @@ let emissionFactors = {};
 
 const DEFAULT_EMISSION_FACTOR = 60;
 const TRACKING_STATE_KEY = 'trackingState';
+const TRACKING_ENABLED_KEY = 'trackingEnabled';
+const SHOW_POPUP_ON_STARTUP_KEY = 'showPopupOnStartup';
+const STARTUP_POPUP_PENDING_KEY = 'startupPopupPending';
 const YOUTUBE_EMBED_RULE_IDS = [1001, 1002];
 const IDLE_DETECTION_INTERVAL_SECONDS = 15;
 const IDLE_DETECTION_INTERVAL_MS = IDLE_DETECTION_INTERVAL_SECONDS * 1000;
+const STARTUP_POPUP_WIDTH = 620;
+const STARTUP_POPUP_HEIGHT = 840;
+const POPUP_PAGE_URL = chrome.runtime.getURL('popup/popup.html');
 
 let currentIdleState = 'active';
 let isBrowserFocused = true;
+let trackingEnabled = true;
+let showPopupOnStartup = true;
+let startupPopupPending = false;
 
 fetch(chrome.runtime.getURL('data/emissionFactors.json'))
     .then((response) => response.json())
@@ -20,12 +29,26 @@ fetch(chrome.runtime.getURL('data/emissionFactors.json'))
     })
     .catch((error) => console.error('EcoArcade: Load Error', error));
 
-chrome.runtime.onInstalled.addListener(() => {
-    void initializeExtension();
+chrome.runtime.onInstalled.addListener((details) => {
+    void initializeExtension(details);
 });
 
 chrome.runtime.onStartup.addListener(() => {
     void restoreRuntimeState();
+});
+
+chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'sync') {
+        return;
+    }
+
+    if (changes[TRACKING_ENABLED_KEY]) {
+        trackingEnabled = changes[TRACKING_ENABLED_KEY].newValue !== false;
+    }
+
+    if (changes[SHOW_POPUP_ON_STARTUP_KEY]) {
+        showPopupOnStartup = changes[SHOW_POPUP_ON_STARTUP_KEY].newValue !== false;
+    }
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -57,6 +80,10 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
     void handleActivatedTab(activeInfo.tabId);
 });
 
+chrome.tabs.onCreated.addListener((tab) => {
+    void handleTabCreated(tab);
+});
+
 chrome.tabs.onRemoved.addListener((tabId) => {
     void handleTabRemoved(tabId);
 });
@@ -65,16 +92,22 @@ chrome.windows.onFocusChanged.addListener((windowId) => {
     void handleWindowFocusChanged(windowId);
 });
 
+chrome.windows.onCreated.addListener(() => {
+    void maybeOpenPendingStartupPopup();
+});
+
 chrome.idle.onStateChanged.addListener((newState) => {
     void handleIdleStateChange(newState);
 });
 
 void ensureYouTubeEmbedRefererRules();
 
-async function initializeExtension() {
+async function initializeExtension(details) {
     await ensureYouTubeEmbedRefererRules();
     await initializeIdleTracking();
     await refreshBrowserFocusState();
+    await ensureRuntimePreferences({ forceTrackingEnabled: true });
+    await chrome.action.enable();
 
     const data = await chrome.storage.sync.get(['totalCO2', 'totalPoints', 'badges', 'siteStats']);
     const updates = {};
@@ -89,13 +122,20 @@ async function initializeExtension() {
     }
 
     await restoreTrackingForFocusedTab();
+
+    if (details?.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+        await scheduleStartupPopup();
+    }
 }
 
 async function restoreRuntimeState() {
     await ensureYouTubeEmbedRefererRules();
     await initializeIdleTracking();
     await refreshBrowserFocusState();
+    await ensureRuntimePreferences({ forceTrackingEnabled: true });
+    await chrome.action.enable();
     await restoreTrackingForFocusedTab();
+    await scheduleStartupPopup();
 }
 
 async function respondWithStats(sendResponse) {
@@ -164,8 +204,33 @@ async function handleActivatedTab(tabId) {
     }
 }
 
+async function handleTabCreated(tab) {
+    if (!trackingEnabled) {
+        return;
+    }
+
+    const tabUrl = tab.pendingUrl || tab.url || '';
+    if (!isAutoPopupNewTab(tabUrl)) {
+        return;
+    }
+
+    try {
+        const window = await chrome.windows.get(tab.windowId);
+        if (window?.type !== 'normal') {
+            return;
+        }
+    } catch (error) {
+        console.warn('EcoArcade: Could not inspect newly created tab window.', error);
+        return;
+    }
+
+    await openOrFocusPopupWindow();
+}
+
 async function handleWindowFocusChanged(windowId) {
     isBrowserFocused = windowId !== chrome.windows.WINDOW_ID_NONE;
+
+    await maybeOpenPendingStartupPopup();
 
     if (windowId === chrome.windows.WINDOW_ID_NONE) {
         await finalizeTrackingSession();
@@ -193,6 +258,11 @@ async function handleTabRemoved(tabId) {
 async function handleTabContextChange(tabId, url) {
     await refreshBrowserFocusState();
 
+    if (!trackingEnabled) {
+        await finalizeTrackingSession();
+        return;
+    }
+
     if (!isBrowserFocused || currentIdleState !== 'active') {
         await finalizeTrackingSession(getSessionEndTimeForIdleState(currentIdleState));
         return;
@@ -209,7 +279,7 @@ async function handleTabContextChange(tabId, url) {
 }
 
 async function startTrackingSession(tabId, url) {
-    if (!isBrowserFocused || currentIdleState !== 'active') {
+    if (!trackingEnabled || !isBrowserFocused || currentIdleState !== 'active') {
         return;
     }
 
@@ -256,6 +326,11 @@ async function finalizeTrackingSession(endTime = Date.now()) {
 async function restoreTrackingForFocusedTab() {
     await refreshBrowserFocusState();
 
+    if (!trackingEnabled) {
+        await finalizeTrackingSession();
+        return;
+    }
+
     if (!isBrowserFocused || currentIdleState !== 'active') {
         await finalizeTrackingSession(getSessionEndTimeForIdleState(currentIdleState));
         return;
@@ -284,7 +359,7 @@ async function buildStatsSnapshot() {
     currentIdleState = await chrome.idle.queryState(IDLE_DETECTION_INTERVAL_SECONDS);
     await refreshBrowserFocusState();
     const trackingState = await getTrackingState();
-    const sessionMetrics = isBrowserFocused
+    const sessionMetrics = trackingEnabled && isBrowserFocused
         ? buildSessionMetrics(trackingState, getSessionEndTimeForIdleState(currentIdleState))
         : null;
 
@@ -347,6 +422,151 @@ function getEmissionFactor(domain) {
 async function initializeIdleTracking() {
     chrome.idle.setDetectionInterval(IDLE_DETECTION_INTERVAL_SECONDS);
     currentIdleState = await chrome.idle.queryState(IDLE_DETECTION_INTERVAL_SECONDS);
+}
+
+async function ensureRuntimePreferences({ forceTrackingEnabled = false } = {}) {
+    const data = await chrome.storage.sync.get([TRACKING_ENABLED_KEY, SHOW_POPUP_ON_STARTUP_KEY]);
+    const updates = {};
+
+    if (data[SHOW_POPUP_ON_STARTUP_KEY] === undefined) {
+        updates[SHOW_POPUP_ON_STARTUP_KEY] = true;
+        showPopupOnStartup = true;
+    } else {
+        showPopupOnStartup = data[SHOW_POPUP_ON_STARTUP_KEY] !== false;
+    }
+
+    if (forceTrackingEnabled || data[TRACKING_ENABLED_KEY] === undefined) {
+        updates[TRACKING_ENABLED_KEY] = true;
+        trackingEnabled = true;
+    } else {
+        trackingEnabled = data[TRACKING_ENABLED_KEY] !== false;
+    }
+
+    if (Object.keys(updates).length) {
+        await chrome.storage.sync.set(updates);
+    }
+}
+
+async function scheduleStartupPopup() {
+    if (!showPopupOnStartup) {
+        await setStartupPopupPending(false);
+        return;
+    }
+
+    await setStartupPopupPending(true);
+    await maybeOpenPendingStartupPopup();
+}
+
+async function maybeOpenPendingStartupPopup() {
+    startupPopupPending = await getStartupPopupPending();
+
+    if (!showPopupOnStartup || !startupPopupPending) {
+        return;
+    }
+
+    if (await focusExistingPopupWindow()) {
+        await setStartupPopupPending(false);
+        return;
+    }
+
+    const hasNormalWindow = await hasNormalBrowserWindow();
+    if (!hasNormalWindow) {
+        return;
+    }
+
+    try {
+        await openOrFocusPopupWindow();
+        await setStartupPopupPending(false);
+    } catch (error) {
+        console.error('EcoArcade: could not open the startup popup window.', error);
+    }
+}
+
+async function openOrFocusPopupWindow() {
+    if (await focusExistingPopupWindow()) {
+        return;
+    }
+
+    await chrome.windows.create({
+        url: POPUP_PAGE_URL,
+        type: 'popup',
+        width: STARTUP_POPUP_WIDTH,
+        height: STARTUP_POPUP_HEIGHT,
+        focused: true
+    });
+}
+
+async function focusExistingPopupWindow() {
+    const popupTab = await findPopupPageTab();
+
+    if (!popupTab) {
+        return false;
+    }
+
+    try {
+        await chrome.windows.update(popupTab.windowId, { focused: true });
+        await chrome.tabs.update(popupTab.id, { active: true });
+        return true;
+    } catch (error) {
+        console.warn('EcoArcade: could not focus existing popup window.', error);
+        return false;
+    }
+}
+
+async function findPopupPageTab() {
+    try {
+        const tabs = await chrome.tabs.query({});
+        return tabs.find((tab) => typeof tab.url === 'string' && tab.url.startsWith(POPUP_PAGE_URL)) || null;
+    } catch (error) {
+        console.warn('EcoArcade: could not inspect existing popup pages.', error);
+        return null;
+    }
+}
+
+function isAutoPopupNewTab(tabUrl) {
+    if (typeof tabUrl !== 'string') {
+        return false;
+    }
+
+    if (tabUrl.startsWith(POPUP_PAGE_URL) || tabUrl.startsWith(chrome.runtime.getURL('dashboard/'))) {
+        return false;
+    }
+
+    return tabUrl === '' || tabUrl === 'about:blank' || tabUrl === 'chrome://newtab/' || tabUrl === 'chrome://newtab';
+}
+
+async function hasNormalBrowserWindow() {
+    try {
+        const windows = await chrome.windows.getAll();
+        return windows.some((win) => win.type === 'normal');
+    } catch (error) {
+        console.warn('EcoArcade: could not inspect browser windows.', error);
+        return false;
+    }
+}
+
+async function getStartupPopupPending() {
+    try {
+        const data = await chrome.storage.session.get(STARTUP_POPUP_PENDING_KEY);
+        return Boolean(data[STARTUP_POPUP_PENDING_KEY]);
+    } catch (error) {
+        console.warn('EcoArcade: could not read startup popup state.', error);
+        return startupPopupPending;
+    }
+}
+
+async function setStartupPopupPending(value) {
+    startupPopupPending = value;
+
+    try {
+        if (value) {
+            await chrome.storage.session.set({ [STARTUP_POPUP_PENDING_KEY]: true });
+        } else {
+            await chrome.storage.session.remove(STARTUP_POPUP_PENDING_KEY);
+        }
+    } catch (error) {
+        console.warn('EcoArcade: could not persist startup popup state.', error);
+    }
 }
 
 async function refreshBrowserFocusState() {

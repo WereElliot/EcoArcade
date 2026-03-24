@@ -2,17 +2,12 @@
   "manifest_version": 3,
   "name": "EcoArcade",
   "version": "1.1.1",
-  "description": "Gamify your digital carbon footprint. Track emissions and earn points with cloud sync.",
+  "description": "Track estimated browsing-related carbon activity, review site summaries, and answer awareness questions.",
   "permissions": [
     "tabs",
     "storage",
-    "activeTab",
-    "notifications",
     "declarativeNetRequest",
     "idle"
-  ],
-  "host_permissions": [
-    "<all_urls>"
   ],
   "background": {
     "service_worker": "background.js",
