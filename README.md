@@ -1,26 +1,87 @@
+<p align="center">
+  <img src="assets/icons/logo-wordmark.png" alt="EcoArcade" width="260">
+</p>
+
 # EcoArcade
 
-EcoArcade is a Microsoft Edge extension that estimates browsing-related carbon activity, summarizes site-level usage, and includes short awareness questions with point and rank progression.
+EcoArcade is a Microsoft Edge extension that estimates browsing-related carbon activity, tracks time spent on sites, and uses quizzes, milestones, and a dashboard to build digital carbon awareness.
 
-## Overview
+## What the product does
 
-The extension provides:
+EcoArcade currently includes two main surfaces:
 
-- A popup summary for the current browsing session
-- A dashboard with totals, site comparisons, milestones, and an explainer section
-- A quiz flow that awards points and updates rank progress
-- Estimated site activity based on time spent and configured emission factors
+- A popup window that shows the current site, time on the active site, estimated site CO2, total tracked CO2, eco points, current rank, the next milestone, one awareness question, and unlocked achievements.
+- A full dashboard that shows an overview, impact summaries, site comparisons, tracked-site breakdowns, contextual reference panels, a curated awareness-video section, and a long-form explainer on digital carbon footprint.
 
-## Current behavior
+## Current experience
 
-When tracking is enabled, the extension:
+### Popup
 
-- tracks the active tab while the browser is in use
-- pauses tracking when the browser loses focus or the device becomes idle
-- opens the popup window at browser startup
-- opens the popup window when a new tab is created
+The popup experience includes:
 
-If you publish this build to Microsoft Edge Add-ons, that popup behavior should be disclosed in the store listing and screenshots.
+- current active-site summary
+- time spent on the current site
+- estimated CO2 for the current site
+- total tracked carbon and eco points
+- rank and next milestone progress
+- one quiz question at a time
+- unlocked badges
+- a shortcut to the full dashboard
+
+### Dashboard
+
+The dashboard includes:
+
+- a top bar with tracking status, rank, points, theme toggle, and responsive compact controls
+- a collapsible left navigation rail
+- a home area with a rotating digital-carbon awareness video
+- insight cards that link to other parts of the dashboard or popup flow
+- site-level tables for tracked domains, time spent, estimated CO2, and impact level
+- comparison bars for global, Kenya, and tracked browsing benchmarks
+- an explainer block that describes the lifecycle and impact of digital activity
+- light and dark theme support
+
+## Tracking behavior
+
+The current build tracks browsing activity using these rules:
+
+- tracks the active tab only
+- pauses when the browser loses focus
+- pauses when the device becomes idle
+- stores site totals and overall totals in extension storage
+- restores tracking state after background restarts where possible
+
+The current build also opens the popup window automatically:
+
+- at browser startup
+- when a new tab is opened
+
+That behavior is part of the live product and should be disclosed anywhere the extension is distributed.
+
+## Quiz and rank system
+
+The popup quiz currently:
+
+- builds a 1,000-question playable pool from the seed bank in `data/quizQuestionBank.json`
+- adjusts question difficulty based on the user's rank
+- awards points by difficulty
+- updates milestone progress and rank display
+
+The current ranks are:
+
+- `Recruit`
+- `Eco Rookie`
+- `Carbon Crusader`
+- `Gaia Guardian`
+
+## Awareness and dashboard content
+
+The dashboard currently includes:
+
+- curated YouTube-based awareness videos selected from a fixed list
+- a site-impact summary driven by tracked browsing data
+- contextual comparison against global and Kenya daily values
+- a bottom explainer section covering the screen, delivery through networks, and the data-center engine room
 
 ## Project structure
 
@@ -39,10 +100,50 @@ ecoarcade-extension/
 |-- data/
 |   |-- emissionFactors.json
 |   `-- quizQuestionBank.json
-`-- assets/
-    |-- icons/
-    `-- branding/
+|-- assets/
+|   |-- icons/
+|   `-- branding/
+`-- content/
+    `-- content.js
 ```
+
+## Key files
+
+### `background.js`
+
+- manages active-tab tracking
+- pauses tracking on idle and focus loss
+- maintains popup-window auto-open behavior
+- calculates site and total CO2 estimates
+- maintains runtime storage state
+- applies YouTube embed request-header rules
+
+### `popup/popup.js`
+
+- loads quiz data
+- renders current site tracking stats
+- applies rank and milestone logic
+- awards points and checks badges
+- opens the full dashboard
+
+### `dashboard/dashboard.js`
+
+- renders dashboard totals and site summaries
+- powers shortcuts between cards and sections
+- loads awareness videos
+- handles theme switching
+- updates rank and comparison displays
+
+## Permissions
+
+The current manifest uses:
+
+- `tabs`
+- `storage`
+- `declarativeNetRequest`
+- `idle`
+
+These support tab tracking, local state, YouTube embed request handling, and idle-based pause logic.
 
 ## Load unpacked in Microsoft Edge
 
@@ -51,66 +152,15 @@ ecoarcade-extension/
 3. Select `Load unpacked`
 4. Choose the project folder
 
-## Main files
-
-### `manifest.json`
-
-- Declares extension metadata
-- Registers the popup and background service worker
-- Declares runtime permissions used by the extension
-
-### `background.js`
-
-- Tracks active-tab browsing time
-- Applies idle and focus-based pause logic
-- Calculates estimated site-level carbon totals
-- Opens the popup window on startup and on new tabs
-- Maintains background state in extension storage
-
-### `popup/popup.html`, `popup/popup.css`, `popup/popup.js`
-
-- Show current site activity and totals
-- Load awareness questions from the question bank
-- Award points and update rank progression
-- Link to the full dashboard
-
-### `dashboard/dashboard.html`, `dashboard/dashboard.css`, `dashboard/dashboard.js`
-
-- Show overall totals and tracked-site summaries
-- Provide milestone, comparison, and explainer sections
-- Link key dashboard cards to deeper parts of the experience
-
-### `data/emissionFactors.json`
-
-- Stores site-level emission factor values used for estimates
-
-### `data/quizQuestionBank.json`
-
-- Stores the seed quiz bank used to generate the popup question pool
-
-## Permissions
-
-The current build uses:
-
-- `tabs`
-- `storage`
-- `declarativeNetRequest`
-- `idle`
-
-These permissions support site tracking, local extension state, YouTube embed request handling, and pause/resume behavior during idle time.
-
-## Microsoft Edge note
-
-This project uses the standard Chromium-compatible extension API namespace in code. It does not need to be rebranded inside source files. What must stay Edge-safe for review is the extension name, description, screenshots, store listing, and other user-facing metadata.
-
 ## Publishing note
 
-For Microsoft Edge Add-ons review:
+For Microsoft Edge Add-ons review, make sure the listing and screenshots accurately reflect:
 
-- keep the name and description factual
-- avoid references to other browsers in listing metadata
-- disclose the automatic popup behavior clearly
-- ensure screenshots match the real product behavior
+- active-tab tracking
+- site-level carbon estimates
+- quiz, rank, and milestone behavior
+- automatic popup-window behavior on startup and new tabs
+- dashboard video and explainer content
 
 ## Related files
 

@@ -607,10 +607,10 @@ function loadSelectedVideo() {
 
     const iframe = document.getElementById('awarenessVideo');
     const poster = document.getElementById('loadVideoBtn');
-    const appReferrer = `https://ecoarcade.${chrome.runtime.id}`;
+    const appReferrer = `https://${chrome.runtime.id}.chromiumapp.org/`;
 
     if (iframe) {
-        iframe.src = `https://www.youtube.com/embed/${currentVideoId}?rel=0&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(appReferrer)}&widget_referrer=${encodeURIComponent(appReferrer)}`;
+        iframe.src = `https://www.youtube.com/embed/${currentVideoId}?rel=0&playsinline=1&origin=${encodeURIComponent(appReferrer)}&widget_referrer=${encodeURIComponent(appReferrer)}`;
         iframe.classList.remove('hidden');
     }
     if (poster) {

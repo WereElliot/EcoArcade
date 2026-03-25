@@ -5,7 +5,10 @@ let quizQuestions = [];
 let currentQuestion = null;
 let currentUserPoints = 0;
 let askedQuestionIds = new Set();
+let refreshIntervalId = null;
+let popupContextInvalidated = false;
 const POPUP_TARGET_STORAGE_KEY = 'ecoArcadePopupTarget';
+const POPUP_RECOVERY_ATTEMPT_KEY = 'ecoArcadePopupRecoveryAttempted';
 
 const QUIZ_PROMPT_VARIANTS = [
     (scenario) => `${scenario} which choice keeps the digital footprint lower?`,
@@ -36,19 +39,55 @@ const RANK_DIFFICULTY_WEIGHTS = {
     'Gaia Guardian': { hard: 0.2, expert: 0.8 }
 };
 
+window.addEventListener('error', (event) => {
+    if (!isExtensionContextInvalidatedError(event?.error || event?.message)) {
+        return;
+    }
+
+    event.preventDefault();
+    handleExtensionContextInvalidated(event.error || new Error(event.message));
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    if (!isExtensionContextInvalidatedError(event?.reason)) {
+        return;
+    }
+
+    event.preventDefault();
+    handleExtensionContextInvalidated(event.reason);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
-    init();
+    void init().catch((error) => {
+        if (isExtensionContextInvalidatedError(error)) {
+            handleExtensionContextInvalidated(error);
+            return;
+        }
+
+        console.error('EcoArcade: popup failed to initialize.', error);
+    });
 });
 
 async function init() {
+    if (!isExtensionContextAvailable()) {
+        handleExtensionContextInvalidated();
+        return;
+    }
+
+    clearPopupRecoveryAttempt();
+
     console.log("EcoArcade: Popup Initializing...");
 
     try {
         const quizBank = await fetch(chrome.runtime.getURL('data/quizQuestionBank.json')).then((response) => response.json());
         quizQuestions = buildQuizQuestions(quizBank);
-        chrome.storage.sync.get(['totalPoints'], (data) => {
-            currentUserPoints = Math.floor(data.totalPoints || 0);
-            loadNewQuestion();
+        withExtensionContext(() => {
+            chrome.storage.sync.get(['totalPoints'], withSafeExtensionCallback((data) => {
+                if (didLastErrorInvalidateContext()) return;
+
+                currentUserPoints = Math.floor(data.totalPoints || 0);
+                loadNewQuestion();
+            }));
         });
     } catch (error) {
         console.error("Error loading mission data:", error);
@@ -63,7 +102,9 @@ async function init() {
     consumePopupTarget();
 
     document.getElementById('openDashboardBtn').addEventListener('click', () => {
-        chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/dashboard.html') });
+        withExtensionContext(() => {
+            chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/dashboard.html') });
+        });
     });
 
     document.getElementById('nextQuestionBtn').addEventListener('click', loadNewQuestion);
@@ -72,28 +113,43 @@ async function init() {
         updateTracker();
     });
 
-    setInterval(() => {
+    refreshIntervalId = window.setInterval(() => {
         updateUI();
         updateTracker();
     }, 2000);
+
+    window.addEventListener('beforeunload', stopRefreshLoop, { once: true });
 }
 
 function consumePopupTarget() {
+    if (!isExtensionContextAvailable()) {
+        handleExtensionContextInvalidated();
+        return;
+    }
+
     const hashTarget = window.location.hash.replace('#', '');
 
     if (chrome.storage?.session?.get) {
-        chrome.storage.session.get([POPUP_TARGET_STORAGE_KEY], (data) => {
-            if (chrome.runtime.lastError) {
-                scrollToPopupTarget(readPopupTargetFallback() || hashTarget);
-                return;
-            }
+        const didRun = withExtensionContext(() => {
+            chrome.storage.session.get([POPUP_TARGET_STORAGE_KEY], withSafeExtensionCallback((data) => {
+                if (didLastErrorInvalidateContext()) {
+                    scrollToPopupTarget(readPopupTargetFallback() || hashTarget);
+                    return;
+                }
 
-            const targetId = data?.[POPUP_TARGET_STORAGE_KEY] || hashTarget;
-            if (data?.[POPUP_TARGET_STORAGE_KEY]) {
-                chrome.storage.session.remove(POPUP_TARGET_STORAGE_KEY);
-            }
-            scrollToPopupTarget(targetId);
+                const targetId = data?.[POPUP_TARGET_STORAGE_KEY] || hashTarget;
+                if (data?.[POPUP_TARGET_STORAGE_KEY]) {
+                    withExtensionContext(() => {
+                        chrome.storage.session.remove(POPUP_TARGET_STORAGE_KEY);
+                    });
+                }
+                scrollToPopupTarget(targetId);
+            }));
         });
+
+        if (!didRun) {
+            return;
+        }
         return;
     }
 
@@ -134,17 +190,30 @@ function scrollToPopupTarget(targetId) {
 }
 
 function updateUI() {
-    chrome.runtime.sendMessage({ action: "getStats" }, (response) => {
-        if (chrome.runtime.lastError) {
-            console.warn("Background connection pending. Using local sync fallback.");
-            chrome.storage.sync.get(['totalCO2', 'totalPoints', 'badges'], (data) => {
-                if (!chrome.runtime.lastError) renderStats(data);
-            });
-            return;
-        }
+    const didRun = withExtensionContext(() => {
+        chrome.runtime.sendMessage({ action: "getStats" }, withSafeExtensionCallback((response) => {
+            if (didLastErrorInvalidateContext()) {
+                return;
+            }
 
-        if (response) renderStats(response);
+            if (hasRuntimeLastError()) {
+                console.warn("Background connection pending. Using local sync fallback.");
+                withExtensionContext(() => {
+                    chrome.storage.sync.get(['totalCO2', 'totalPoints', 'badges'], withSafeExtensionCallback((data) => {
+                        if (didLastErrorInvalidateContext()) return;
+                        if (!hasRuntimeLastError()) renderStats(data);
+                    }));
+                });
+                return;
+            }
+
+            if (response) renderStats(response);
+        }));
     });
+
+    if (!didRun) {
+        return;
+    }
 }
 
 function renderStats(data) {
@@ -188,32 +257,139 @@ function renderStats(data) {
 }
 
 function updateTracker() {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (!tabs || tabs.length === 0) return;
+    const didRun = withExtensionContext(() => {
+        chrome.tabs.query({ active: true }, withSafeExtensionCallback((tabs) => {
+            if (didLastErrorInvalidateContext()) {
+                return;
+            }
 
-        const url = tabs[0].url;
-        let domain = "Scanning...";
+            if (!tabs || tabs.length === 0) {
+                renderUntrackedCurrentTab();
+                return;
+            }
 
-        try {
-            domain = new URL(url).hostname.replace('www.', '');
-        } catch (error) {
-            console.warn('Could not parse current tab URL.', error);
+            const activeTab = pickMostRelevantActiveTab(tabs);
+            const domain = getTrackableDomain(activeTab?.url);
+
+            if (!domain) {
+                renderUntrackedCurrentTab(activeTab?.url);
+                return;
+            }
+
+            const siteElement = document.getElementById('currentSite');
+            if (siteElement) siteElement.textContent = domain;
+
+            withExtensionContext(() => {
+                chrome.storage.sync.get(['siteStats'], withSafeExtensionCallback((data) => {
+                    if (didLastErrorInvalidateContext()) return;
+
+                    const stats = data.siteStats?.[domain] || { time: 0, co2: 0 };
+                    const timeVal = document.getElementById('currentTime');
+                    if (timeVal) timeVal.textContent = `${Math.floor(stats.time / 60000)}m`;
+
+                    const emissVal = document.getElementById('currentEmissions');
+                    if (emissVal) emissVal.textContent = formatCO2(stats.co2);
+
+                    updateCurrentSiteSummary(domain, stats);
+                }));
+            });
+        }));
+    });
+
+    if (!didRun) {
+        return;
+    }
+}
+
+function getTrackableDomain(url) {
+    if (typeof url !== 'string' || !url) {
+        return '';
+    }
+
+    try {
+        const parsedUrl = new URL(url);
+        if (!/^https?:$/.test(parsedUrl.protocol)) {
+            return '';
         }
 
-        const siteElement = document.getElementById('currentSite');
-        if (siteElement) siteElement.textContent = domain;
+        return parsedUrl.hostname.replace('www.', '');
+    } catch (error) {
+        return '';
+    }
+}
 
-        chrome.storage.sync.get(['siteStats'], (data) => {
-            const stats = data.siteStats?.[domain] || { time: 0, co2: 0 };
-            const timeVal = document.getElementById('currentTime');
-            if (timeVal) timeVal.textContent = `${Math.floor(stats.time / 60000)}m`;
+function pickMostRelevantActiveTab(tabs) {
+    if (!Array.isArray(tabs) || !tabs.length) {
+        return null;
+    }
 
-            const emissVal = document.getElementById('currentEmissions');
-            if (emissVal) emissVal.textContent = formatCO2(stats.co2);
+    const rankedTabs = [...tabs].sort((left, right) => {
+        const leftTrackable = Boolean(getTrackableDomain(left?.url));
+        const rightTrackable = Boolean(getTrackableDomain(right?.url));
 
-            updateCurrentSiteSummary(domain, stats);
-        });
+        if (leftTrackable !== rightTrackable) {
+            return rightTrackable - leftTrackable;
+        }
+
+        return (right?.lastAccessed || 0) - (left?.lastAccessed || 0);
     });
+
+    return rankedTabs[0] || null;
+}
+
+function renderUntrackedCurrentTab(url = '') {
+    const siteElement = document.getElementById('currentSite');
+    if (siteElement) {
+        siteElement.textContent = getCurrentTabLabel(url);
+    }
+
+    const timeVal = document.getElementById('currentTime');
+    if (timeVal) timeVal.textContent = '0m';
+
+    const emissVal = document.getElementById('currentEmissions');
+    if (emissVal) emissVal.textContent = formatCO2(0);
+
+    const impactPill = document.getElementById('impactPill');
+    if (impactPill) {
+        impactPill.className = 'impact-pill neutral';
+        impactPill.textContent = 'Not tracked';
+    }
+
+    const focusMessage = document.getElementById('focusMessage');
+    if (focusMessage) {
+        focusMessage.textContent = 'Only normal web pages are tracked. Open an http or https page to measure activity.';
+    }
+
+    const alertBanner = document.getElementById('highCarbonAlert');
+    if (alertBanner) {
+        alertBanner.classList.add('hidden');
+    }
+}
+
+function getCurrentTabLabel(url = '') {
+    if (!url) {
+        return 'No web page selected';
+    }
+
+    const extensionPrefix = isExtensionContextAvailable() ? chrome.runtime.getURL('') : '';
+    if (extensionPrefix && url.startsWith(extensionPrefix)) {
+        return 'EcoArcade page';
+    }
+
+    try {
+        const parsedUrl = new URL(url);
+        if (parsedUrl.protocol === 'edge:' || parsedUrl.protocol === 'chrome:' || parsedUrl.protocol === 'about:') {
+            return 'Browser page';
+        }
+
+        if (parsedUrl.protocol === 'file:') {
+            return 'Local file';
+        }
+
+        return 'This page';
+    } catch (error) {
+        return 'Browser page';
+    }
 }
 
 function loadNewQuestion() {
@@ -293,19 +469,177 @@ function showResult(correct) {
             resultMsg.style.color = '#39ff14';
         }
 
-        chrome.storage.sync.get(['totalPoints'], (data) => {
-            const newXP = (data.totalPoints || 0) + currentQuestion.points;
-            currentUserPoints = newXP;
-            chrome.storage.sync.set({ totalPoints: newXP }, () => {
-                chrome.runtime.sendMessage({ action: 'checkBadges' }, () => {
-                    if (chrome.runtime.lastError) console.warn("Badge check connection pending.");
-                    updateUI();
-                });
-            });
+        withExtensionContext(() => {
+            chrome.storage.sync.get(['totalPoints'], withSafeExtensionCallback((data) => {
+                if (didLastErrorInvalidateContext()) return;
+
+                const newXP = (data.totalPoints || 0) + currentQuestion.points;
+                currentUserPoints = newXP;
+                chrome.storage.sync.set({ totalPoints: newXP }, withSafeExtensionCallback(() => {
+                    if (didLastErrorInvalidateContext()) return;
+
+                    chrome.runtime.sendMessage({ action: 'checkBadges' }, withSafeExtensionCallback(() => {
+                        if (didLastErrorInvalidateContext()) return;
+                        if (hasRuntimeLastError()) console.warn("Badge check connection pending.");
+                        updateUI();
+                    }));
+                }));
+            }));
         });
     } else if (resultMsg) {
         resultMsg.textContent = `Not this time. Correct answer: ${currentQuestion.correctAnswer}\n${currentQuestion.explanation}`;
         resultMsg.style.color = '#ff3333';
+    }
+}
+
+function isExtensionContextAvailable() {
+    try {
+        return Boolean(chrome?.runtime?.id);
+    } catch (error) {
+        return false;
+    }
+}
+
+function isExtensionContextInvalidatedError(error) {
+    const message = error?.message || String(error || '');
+    return /Extension context invalidated/i.test(message);
+}
+
+function withExtensionContext(action) {
+    if (popupContextInvalidated || !isExtensionContextAvailable()) {
+        handleExtensionContextInvalidated();
+        return false;
+    }
+
+    try {
+        action();
+        return true;
+    } catch (error) {
+        if (isExtensionContextInvalidatedError(error)) {
+            handleExtensionContextInvalidated(error);
+            return false;
+        }
+
+        throw error;
+    }
+}
+
+function didLastErrorInvalidateContext() {
+    const error = getRuntimeLastError();
+    if (!error) return false;
+
+    if (isExtensionContextInvalidatedError(error)) {
+        handleExtensionContextInvalidated(error);
+        return true;
+    }
+
+    return false;
+}
+
+function handleExtensionContextInvalidated(error) {
+    if (popupContextInvalidated) {
+        return;
+    }
+
+    popupContextInvalidated = true;
+    stopRefreshLoop();
+
+    console.warn('EcoArcade: popup context invalidated. Close and reopen the popup.', error);
+
+    if (attemptPopupRecovery()) {
+        return;
+    }
+
+    const currentSite = document.getElementById('currentSite');
+    if (currentSite) currentSite.textContent = 'Extension reloaded';
+
+    const focusMessage = document.getElementById('focusMessage');
+    if (focusMessage) {
+        focusMessage.textContent = 'This popup window is no longer connected. Close it and reopen EcoArcade.';
+    }
+
+    const questionText = document.getElementById('questionText');
+    if (questionText) {
+        questionText.textContent = 'This popup is out of date after an extension reload. Close it and reopen EcoArcade.';
+    }
+
+    document.querySelectorAll('button').forEach((button) => {
+        button.disabled = true;
+    });
+}
+
+function stopRefreshLoop() {
+    if (refreshIntervalId !== null) {
+        window.clearInterval(refreshIntervalId);
+        refreshIntervalId = null;
+    }
+}
+
+function withSafeExtensionCallback(callback) {
+    return (...args) => {
+        if (popupContextInvalidated) {
+            return;
+        }
+
+        try {
+            callback(...args);
+        } catch (error) {
+            if (isExtensionContextInvalidatedError(error)) {
+                handleExtensionContextInvalidated(error);
+                return;
+            }
+
+            throw error;
+        }
+    };
+}
+
+function getRuntimeLastError() {
+    try {
+        return chrome?.runtime?.lastError || null;
+    } catch (error) {
+        if (isExtensionContextInvalidatedError(error)) {
+            handleExtensionContextInvalidated(error);
+            return error;
+        }
+
+        throw error;
+    }
+}
+
+function hasRuntimeLastError() {
+    return Boolean(getRuntimeLastError());
+}
+
+function attemptPopupRecovery() {
+    try {
+        if (window.sessionStorage.getItem(POPUP_RECOVERY_ATTEMPT_KEY) === 'true') {
+            return false;
+        }
+
+        window.sessionStorage.setItem(POPUP_RECOVERY_ATTEMPT_KEY, 'true');
+
+        const focusMessage = document.getElementById('focusMessage');
+        if (focusMessage) {
+            focusMessage.textContent = 'Reconnecting EcoArcade after the extension reload...';
+        }
+
+        window.setTimeout(() => {
+            window.location.reload();
+        }, 150);
+
+        return true;
+    } catch (recoveryError) {
+        console.warn('EcoArcade: popup recovery reload could not be scheduled.', recoveryError);
+        return false;
+    }
+}
+
+function clearPopupRecoveryAttempt() {
+    try {
+        window.sessionStorage.removeItem(POPUP_RECOVERY_ATTEMPT_KEY);
+    } catch (error) {
+        console.warn('EcoArcade: popup recovery state could not be cleared.', error);
     }
 }
 

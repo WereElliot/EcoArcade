@@ -9,6 +9,10 @@
     "declarativeNetRequest",
     "idle"
   ],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "https://www.youtube-nocookie.com/*"
+  ],
   "background": {
     "service_worker": "background.js",
     "type": "module"

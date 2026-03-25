@@ -506,6 +506,7 @@ async function focusExistingPopupWindow() {
     try {
         await chrome.windows.update(popupTab.windowId, { focused: true });
         await chrome.tabs.update(popupTab.id, { active: true });
+        await chrome.tabs.reload(popupTab.id);
         return true;
     } catch (error) {
         console.warn('EcoArcade: could not focus existing popup window.', error);
@@ -624,7 +625,7 @@ function getDomain(url) {
 }
 
 async function ensureYouTubeEmbedRefererRules() {
-    const appReferrer = `https://ecoarcade.${chrome.runtime.id}`;
+    const appReferrer = `https://${chrome.runtime.id}.chromiumapp.org/`;
 
     try {
         await chrome.declarativeNetRequest.updateDynamicRules({
