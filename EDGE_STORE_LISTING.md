@@ -1,10 +1,10 @@
 # Edge Store Listing Draft
 
 ## Short description
-Track estimated browsing-related carbon activity, review site summaries, and answer awareness questions.
+Track estimated browsing-related carbon activity, review site summaries, and answer awareness questions in Microsoft Edge.
 
 ## Description
-EcoArcade is a browser extension that estimates browsing-related carbon activity based on time spent on sites and site-specific emission factors. It provides a popup summary, a dashboard with site-level totals and comparisons, and short awareness questions that award points and rank progress inside the extension.
+EcoArcade is a Microsoft Edge extension that estimates browsing-related carbon activity based on time spent on sites and site-specific emission factors. It provides a popup summary, a dashboard with site-level totals and comparisons, and short awareness questions that award points and rank progress inside the extension.
 
 The extension tracks the active tab while the browser is in use, pauses when the browser loses focus or the device becomes idle, and shows site summaries such as time spent, estimated carbon totals, and milestone progress. It also includes a dashboard section with reference context and embedded educational video links.
 

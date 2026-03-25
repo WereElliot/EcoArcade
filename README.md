@@ -1,233 +1,118 @@
-# 🌍 EcoArcade - Gamified Carbon Footprint Tracker
+# EcoArcade
 
-A extension that gamifies your digital carbon footprint. Track time spent on high-carbon websites, estimate CO₂ emissions, and earn points by completing sustainability quizzes.
+EcoArcade is a Microsoft Edge extension that estimates browsing-related carbon activity, summarizes site-level usage, and includes short awareness questions with point and rank progression.
 
-## 🎮 Features
+## Overview
 
-- **Carbon Tracking**: Automatically tracks time spent on energy-intensive websites (YouTube, Netflix, Twitch, etc.)
-- **Emission Calculation**: Uses real-world emission factors to estimate CO₂ consumption per hour
-- **Sustainability Quizzes**: Answer eco-friendly trivia questions to earn points
-- **Points System**: Earn points from correct answers to "offset" your digital emissions
-- **Achievement Badges**: Unlock badges as you reach milestones
-- **Real-time Dashboard**: View your total CO₂ emissions and points earned
+The extension provides:
 
-## 📦 Project Structure
+- A popup summary for the current browsing session
+- A dashboard with totals, site comparisons, milestones, and an explainer section
+- A quiz flow that awards points and updates rank progress
+- Estimated site activity based on time spent and configured emission factors
 
-```
+## Current behavior
+
+When tracking is enabled, the extension:
+
+- tracks the active tab while the browser is in use
+- pauses tracking when the browser loses focus or the device becomes idle
+- opens the popup window at browser startup
+- opens the popup window when a new tab is created
+
+If you publish this build to Microsoft Edge Add-ons, that popup behavior should be disclosed in the store listing and screenshots.
+
+## Project structure
+
+```text
 ecoarcade-extension/
-├── manifest.json              # Extension configuration & permissions
-├── bacckground.js             # Service worker (tracks tabs & emissions)
-├── popup/
-│   ├── popup.html            # UI layout
-│   ├── popup.css             # Arcade-themed styles
-│   └── popup.js              # Logic for quiz & UI updates
-├── data/
-│   ├── emissionFactors.json  # CO₂ per hour for each domain
-│   └── quizQuestions.json    # Quiz questions & answers
-├── assets/
-│   └── icons/                # Extension icons (16x16, 48x48, 128x128)
-└── README.md                 # This file
+|-- manifest.json
+|-- background.js
+|-- popup/
+|   |-- popup.html
+|   |-- popup.css
+|   `-- popup.js
+|-- dashboard/
+|   |-- dashboard.html
+|   |-- dashboard.css
+|   `-- dashboard.js
+|-- data/
+|   |-- emissionFactors.json
+|   `-- quizQuestionBank.json
+`-- assets/
+    |-- icons/
+    `-- branding/
 ```
 
-## 🚀 Installation
+## Load unpacked in Microsoft Edge
 
-### Load Unpacked in Edge
+1. Open `edge://extensions/`
+2. Turn on `Developer mode`
+3. Select `Load unpacked`
+4. Choose the project folder
 
-1. Open Edge and navigate to **Edge://extensions/**
-2. Enable **Developer mode** (toggle in top right)
-3. Click **Load unpacked**
-4. Select the `ecoarcade-extension` folder
-5. The extension will appear in your Edge toolbar
+## Main files
 
-### First Run
+### `manifest.json`
 
-When the extension first loads, it will:
-- Initialize the storage system
-- Load emission factors and quiz questions
-- Set your initial stats to 0
-
-Click the extension icon to open the popup and start using it!
-
-## 📊 How It Works
-
-### 1. **Carbon Tracking (bacckground.js)**
-- Monitors which tabs you have open
-- Extracts domain names from visited websites
-- Tracks time spent per domain
-- Calculates CO₂ emissions using emission factors
-- Stores data in Edge's local storage
-
-### 2. **Emission Factors (data/emissionFactors.json)**
-Each website has an associated CO₂ emission factor (grams per hour):
-- **YouTube**: 150g/hour
-- **Netflix**: 200g/hour
-- **Twitch**: 180g/hour
-- **Instagram**: 120g/hour
-- **TikTok**: 160g/hour
-- **Default**: 100g/hour (for unlisted sites)
-
-### 3. **Quiz System (popup.js)**
-- Loads 10 sustainability questions
-- Displays one question at a time with multiple choice options
-- Awards points for correct answers
-- Shows explanations after each question
-- Tracks cumulative points
-
-### 4. **Badges (bacckground.js)**
-Automatic badges unlock when you reach milestones:
-
-| Badge | Requirement |
-|-------|-------------|
-| 👁️ Eco Watcher | 100g CO₂ tracked |
-| 📊 Carbon Tracker | 1kg CO₂ tracked |
-| 🦸 Environmental Hero | 5kg CO₂ tracked |
-| 🎓 Quiz Master | 100 points earned |
-| 🧙 Sustainability Guru | 500 points earned |
-
-## 🎯 Quiz Questions
-
-The extension includes 10 pre-loaded questions covering:
-- Carbon footprint reduction strategies
-- Energy consumption of streaming
-- Sustainable transportation
-- Eco-friendly tech habits
-- Email and data server emissions
-
-Each correct answer awards **10-15 points** depending on difficulty.
-
-## 💾 Data Storage
-
-All data is stored in **Edge's local storage** (persistent per user):
-- `totalCO2`: Total grams of CO₂ tracked
-- `totalPoints`: Total points earned from quizzes
-- `badges`: Array of earned badges
-- `sessionData`: Hour-by-hour tracking per domain per day
-
-## 🔧 Customization
-
-### Add More High-Carbon Sites
-
-Edit `data/emissionFactors.json`:
-```json
-{
-  "facebook.com": 140,
-  "www.facebook.com": 140,
-  "your-site.com": 150,
-  "default": 100
-}
-```
-
-### Add More Quiz Questions
-
-Edit `data/quizQuestions.json`. Each question needs:
-```json
-{
-  "id": 11,
-  "question": "Your question?",
-  "options": ["Option A", "Option B", "Option C"],
-  "correctAnswer": "Option A",
-  "points": 10,
-  "explanation": "Why is this correct?"
-}
-```
-
-### Modify Badge Thresholds
-
-Edit the `checkBadges()` function in `bacckground.js`:
-```javascript
-if (co2 >= 100 && !badges.includes('Eco Watcher')) {
-  newBadges.push('Eco Watcher');
-}
-```
-
-## 🎨 UI/UX Details
-
-- **Arcade Theme**: Vibrant gradient backgrounds with playful emojis
-- **Real-time Updates**: Stats refresh every 2 seconds
-- **Visual Feedback**: Selected answers highlight, correct/incorrect colors
-- **Responsive Design**: Works on different popup sizes
-- **Smooth Animations**: Pulse effects, slide-in badges, hover transitions
-
-## 🔐 Privacy & Permissions
-
-The extension requests:
-- **tabs**: To track which websites you visit
-- **storage**: To save your stats and quiz progress
-- **webRequest**: To monitor tab activities
-
-**Data is stored locally only** - nothing is sent to external servers.
-
-## 🐛 Troubleshooting
-
-### Extension not tracking sites
-- Ensure you've enabled the extension (visible in toolbar)
-- Check that you have the latest version loaded
-- Reload the extension at Edge://extensions/
-
-### Quiz questions not appearing
-- Verify `quizQuestions.json` exists and is properly formatted
-- Check browser console (F12) for error messages
-- Try refreshing the popup (close and reopen)
-
-### Stats not updating
-- Make sure you have the latest manifest.json
-- Clear Edge storage: Settings → Privacy & Security → Clear browsing data
-- Reload the extension
-
-## 📝 File Details
-
-### manifest.json
 - Declares extension metadata
-- Registers permissions and service worker
-- Specifies popup and icon locations
+- Registers the popup and background service worker
+- Declares runtime permissions used by the extension
 
-### bacckground.js
-- Runs continuously in the background
-- Tracks active tabs and time spent
-- Calculates CO₂ emissions
-- Awards badges and responds to quiz submissions
+### `background.js`
 
-### popup.html
-- Main UI structure
-- Dashboard section with stats
-- Quiz section with Q&A
-- Badges display area
+- Tracks active-tab browsing time
+- Applies idle and focus-based pause logic
+- Calculates estimated site-level carbon totals
+- Opens the popup window on startup and on new tabs
+- Maintains background state in extension storage
 
-### popup.css
-- Arcade/gaming aesthetic
-- Gradient backgrounds
-- Responsive grid layouts
-- Smooth animations and transitions
+### `popup/popup.html`, `popup/popup.css`, `popup/popup.js`
 
-### popup.js
-- Handles quiz logic (load, shuffle, validate)
-- Updates UI with current stats
-- Communicates with background worker
-- Manages quiz flow (start, answer, skip, end)
+- Show current site activity and totals
+- Load awareness questions from the question bank
+- Award points and update rank progression
+- Link to the full dashboard
 
-## 🌱 Real-world Impact
+### `dashboard/dashboard.html`, `dashboard/dashboard.css`, `dashboard/dashboard.js`
 
-While this is a gamified tool, the CO₂ calculations are based on real estimates:
-- Streaming video generates ~200-400g CO₂ per hour
-- Data centers account for ~2-3% of global electricity use
-- Reducing screen time and optimizing streaming quality genuinely reduces carbon footprint
+- Show overall totals and tracked-site summaries
+- Provide milestone, comparison, and explainer sections
+- Link key dashboard cards to deeper parts of the experience
 
-Use EcoArcade to become more aware of your digital habits!
+### `data/emissionFactors.json`
 
-## 📄 License
+- Stores site-level emission factor values used for estimates
 
-Open source - feel free to modify and extend!
+### `data/quizQuestionBank.json`
 
-## 🤝 Contributing
+- Stores the seed quiz bank used to generate the popup question pool
 
-Want to add more features?
-- Add new quiz categories
-- Expand emission factor database
-- Create more badge types
-- Improve UI/UX
+## Permissions
 
-Simply edit the JSON data files and JavaScript logic!
+The current build uses:
 
----
+- `tabs`
+- `storage`
+- `declarativeNetRequest`
+- `idle`
 
-**Happy tracking! Every point counts. 🌱**
+These permissions support site tracking, local extension state, YouTube embed request handling, and pause/resume behavior during idle time.
+
+## Microsoft Edge note
+
+This project uses the standard Chromium-compatible extension API namespace in code. It does not need to be rebranded inside source files. What must stay Edge-safe for review is the extension name, description, screenshots, store listing, and other user-facing metadata.
+
+## Publishing note
+
+For Microsoft Edge Add-ons review:
+
+- keep the name and description factual
+- avoid references to other browsers in listing metadata
+- disclose the automatic popup behavior clearly
+- ensure screenshots match the real product behavior
+
+## Related files
+
+- [manifest.json](/C:/Users/USER/Desktop/ecoarcade-%20extension/manifest.json)
+- [EDGE_STORE_LISTING.md](/C:/Users/USER/Desktop/ecoarcade-%20extension/EDGE_STORE_LISTING.md)
