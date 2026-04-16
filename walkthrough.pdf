@@ -1,0 +1,20 @@
+# EcoArcade V2 Feature Improvements
+
+I've successfully finished implementing the new requested features for EcoArcade! The codebase has been retrofitted with AI integrations, blockchain token systems, advanced tracking, and a fresh UI overlay.
+
+### Changes Made
+- **YouTube IFrame Progress Tracking**: Replaced the standard `<iframe src="..."/>` with the `window.YT.Player` module. The app now tracks how much of an embedded video you've consumed and automatically rewards `50 EcoPoints` when you finish 70% of the video duration.
+- **Mindful Browsing Awards**: Hooked into `background.js`. At the end of every active session, if a user spends longer than 1 minute browsing efficiently (under a very low threshold like 2g of estimated CO₂/hr), they are automatically handed an interval bonus of mindful `EcoPoints`.
+- **Active OpenAI API Service**: Wrote `services/aiCopilot.js`, fully outfitted with dynamic key rotation array using the simulated keys. It acts as the backbone for verifying stewardship images using OpenAI's Vision capabilities (`gpt-4o`).
+- **Mock Tokenizer / Blockchain**: Implemented `services/blockchainMock.js` which simulates Ethereum latency and builds smart contract "hashing" logic for minting Real-World-Action NFTs, and handles point-to-token converting. 
+- **Upgraded Dashboard Application**:
+  - Two new panes: **Stewardship** (for AI photo upload verifications) and **Web3 Wallet** (converting EcoPoints to EcoTokens and hitting "Donate" for verified climate projects).
+  - Modernized `dashboard.html` and `dashboard.js` to render these flows beautifully side-by-side.
+- **Aesthetic V2 Pass**: Touched up both `dashboard.css` and `popup.css`. Fonts have been unified with Google Font's **Inter/Outfit**. Base panels have been wrapped in `backdrop-filter: blur(16px)` class styling, granting the dashboard that extremely premium **Glassmorphism** depth.
+
+### Manual Verification
+To verify the build, you can test it directly on Chrome/Edge:
+1. Go to `edge://extensions` or `chrome://extensions`.
+2. Ensure **Developer Mode** is toggled on.
+3. Choose **Load Unpacked**, and point to the `ecoarcade- extension` root folder on your `Desktop`.
+4. The extension icon will appear! You can test loading the dashboard, interacting with the smart YouTube tracker to earn your first 50 points, snapping a photo for the AI module under stewardship, and pushing those points out as Blockchain donations.

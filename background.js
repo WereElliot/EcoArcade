@@ -8,9 +8,12 @@ const TRACKING_STATE_KEY = 'trackingState';
 const TRACKING_ENABLED_KEY = 'trackingEnabled';
 const SHOW_POPUP_ON_STARTUP_KEY = 'showPopupOnStartup';
 const STARTUP_POPUP_PENDING_KEY = 'startupPopupPending';
+const EMISSIONS_HISTORY_KEY = 'emissionsHistory';
 const YOUTUBE_EMBED_RULE_IDS = [1001, 1002];
 const IDLE_DETECTION_INTERVAL_SECONDS = 15;
 const IDLE_DETECTION_INTERVAL_MS = IDLE_DETECTION_INTERVAL_SECONDS * 1000;
+const HISTORY_DAY_LIMIT = 45;
+const HISTORY_MONTH_LIMIT = 18;
 const STARTUP_POPUP_WIDTH = 620;
 const STARTUP_POPUP_HEIGHT = 840;
 const POPUP_PAGE_URL = chrome.runtime.getURL('popup/popup.html');
@@ -114,11 +117,17 @@ async function initializeExtension(details) {
 
     if (data.totalCO2 === undefined) updates.totalCO2 = 0;
     if (data.totalPoints === undefined) updates.totalPoints = 0;
+    if (data.ecoTokens === undefined) updates.ecoTokens = 0;
     if (!Array.isArray(data.badges)) updates.badges = [];
     if (!data.siteStats) updates.siteStats = {};
 
     if (Object.keys(updates).length) {
         await chrome.storage.sync.set(updates);
+    }
+
+    const localData = await chrome.storage.local.get(EMISSIONS_HISTORY_KEY);
+    if (!localData[EMISSIONS_HISTORY_KEY]) {
+        await chrome.storage.local.set({ [EMISSIONS_HISTORY_KEY]: createEmptyEmissionsHistory() });
     }
 
     await restoreTrackingForFocusedTab();
@@ -162,7 +171,8 @@ async function respondWithDashboardData(sendResponse) {
             totalCO2: 0,
             totalPoints: 0,
             badges: [],
-            siteStats: {}
+            siteStats: {},
+            history: createEmptyEmissionsHistory()
         });
     }
 }
@@ -313,13 +323,32 @@ async function finalizeTrackingSession(endTime = Date.now()) {
         return;
     }
 
-    const data = await chrome.storage.sync.get(['totalCO2', 'siteStats']);
+    const [data, localData] = await Promise.all([
+        chrome.storage.sync.get(['totalCO2', 'totalPoints', 'siteStats']),
+        chrome.storage.local.get(EMISSIONS_HISTORY_KEY)
+    ]);
     const totalCO2 = (data.totalCO2 || 0) + sessionMetrics.co2;
+    let totalPoints = data.totalPoints || 0;
     const siteStats = cloneSiteStats(data.siteStats || {});
+    const emissionsHistory = normalizeEmissionsHistory(localData[EMISSIONS_HISTORY_KEY]);
+
+    // Mindful Browsing Gamification:
+    // Reward points for sessions that are longer than 1 minute but very low CO2
+    const durationMins = sessionMetrics.durationMs / (1000 * 60);
+    if (durationMins > 1 && sessionMetrics.co2 < 2.0) { // e.g. < 2g per session
+        // Give 5 points per minute of mindful low-carbon browsing
+        const bonus = Math.floor(durationMins * 5);
+        totalPoints += bonus;
+    }
 
     applySessionToSiteStats(siteStats, sessionMetrics);
+    applySessionToHistory(emissionsHistory, sessionMetrics, endTime);
+    pruneEmissionsHistory(emissionsHistory);
 
-    await chrome.storage.sync.set({ totalCO2, siteStats });
+    await Promise.all([
+        chrome.storage.sync.set({ totalCO2, totalPoints, siteStats }),
+        chrome.storage.local.set({ [EMISSIONS_HISTORY_KEY]: emissionsHistory })
+    ]);
     await clearTrackingState();
 }
 
@@ -348,12 +377,16 @@ async function restoreTrackingForFocusedTab() {
 }
 
 async function buildStatsSnapshot() {
-    const syncData = await chrome.storage.sync.get(['totalCO2', 'totalPoints', 'badges', 'siteStats']);
+    const [syncData, localData] = await Promise.all([
+        chrome.storage.sync.get(['totalCO2', 'totalPoints', 'badges', 'siteStats']),
+        chrome.storage.local.get(EMISSIONS_HISTORY_KEY)
+    ]);
     const snapshot = {
         totalCO2: syncData.totalCO2 || 0,
         totalPoints: syncData.totalPoints || 0,
         badges: Array.isArray(syncData.badges) ? syncData.badges : [],
-        siteStats: cloneSiteStats(syncData.siteStats || {})
+        siteStats: cloneSiteStats(syncData.siteStats || {}),
+        history: normalizeEmissionsHistory(localData[EMISSIONS_HISTORY_KEY])
     };
 
     currentIdleState = await chrome.idle.queryState(IDLE_DETECTION_INTERVAL_SECONDS);
@@ -369,6 +402,7 @@ async function buildStatsSnapshot() {
 
     snapshot.totalCO2 += sessionMetrics.co2;
     applySessionToSiteStats(snapshot.siteStats, sessionMetrics);
+    applySessionToHistory(snapshot.history, sessionMetrics, getSessionEndTimeForIdleState(currentIdleState));
 
     return snapshot;
 }
@@ -413,6 +447,93 @@ function cloneSiteStats(siteStats) {
             }
         ])
     );
+}
+
+function createEmptyEmissionsHistory() {
+    return {
+        daily: {},
+        monthly: {}
+    };
+}
+
+function normalizeEmissionsHistory(history) {
+    const normalized = createEmptyEmissionsHistory();
+
+    if (!history || typeof history !== 'object') {
+        return normalized;
+    }
+
+    normalized.daily = cloneHistoryEntries(history.daily);
+    normalized.monthly = cloneHistoryEntries(history.monthly);
+
+    return normalized;
+}
+
+function cloneHistoryEntries(entries) {
+    if (!entries || typeof entries !== 'object') {
+        return {};
+    }
+
+    return Object.fromEntries(
+        Object.entries(entries).map(([key, value]) => [
+            key,
+            {
+                totalCO2: value?.totalCO2 || 0,
+                totalTime: value?.totalTime || 0,
+                sites: cloneSiteStats(value?.sites || {})
+            }
+        ])
+    );
+}
+
+function applySessionToHistory(history, sessionMetrics, timestamp) {
+    if (!history || !sessionMetrics?.domain) {
+        return;
+    }
+
+    const { dayKey, monthKey } = getHistoryKeys(timestamp);
+    applySessionToHistoryEntry(history.daily, dayKey, sessionMetrics);
+    applySessionToHistoryEntry(history.monthly, monthKey, sessionMetrics);
+}
+
+function applySessionToHistoryEntry(container, key, sessionMetrics) {
+    const existingEntry = container[key] || {
+        totalCO2: 0,
+        totalTime: 0,
+        sites: {}
+    };
+
+    existingEntry.totalCO2 += sessionMetrics.co2;
+    existingEntry.totalTime += sessionMetrics.durationMs;
+    applySessionToSiteStats(existingEntry.sites, sessionMetrics);
+
+    container[key] = existingEntry;
+}
+
+function pruneEmissionsHistory(history) {
+    pruneHistoryContainer(history.daily, HISTORY_DAY_LIMIT);
+    pruneHistoryContainer(history.monthly, HISTORY_MONTH_LIMIT);
+}
+
+function pruneHistoryContainer(container, limit) {
+    const keys = Object.keys(container).sort();
+    const staleKeys = keys.slice(0, Math.max(0, keys.length - limit));
+
+    staleKeys.forEach((key) => {
+        delete container[key];
+    });
+}
+
+function getHistoryKeys(timestamp) {
+    const date = new Date(timestamp);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return {
+        dayKey: `${year}-${month}-${day}`,
+        monthKey: `${year}-${month}`
+    };
 }
 
 function getEmissionFactor(domain) {

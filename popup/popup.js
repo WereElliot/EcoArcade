@@ -103,7 +103,7 @@ async function init() {
 
     document.getElementById('openDashboardBtn').addEventListener('click', () => {
         withExtensionContext(() => {
-            chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/dashboard.html') });
+            chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/index.html') });
         });
     });
 

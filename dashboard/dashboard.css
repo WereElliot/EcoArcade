@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap');
+
 :root {
     --bg: #07181e;
     --bg-strong: #0d232c;
@@ -51,8 +53,8 @@
     --bar-global-glow: 0 0 18px rgba(255, 133, 27, 0.3);
     --bar-kenya-glow: 0 0 18px rgba(133, 20, 75, 0.34);
     --bar-user-glow: 0 0 18px rgba(94, 188, 103, 0.32);
-    --font-reading: "Cambria", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-    --font-ui: "Segoe UI", Tahoma, Arial, sans-serif;
+    --font-reading: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-ui: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 :root[data-theme="light"] {
@@ -414,7 +416,7 @@ body {
 .insight-value,
 .renewable-value {
     margin: 0;
-    font-family: var(--font-reading);
+    font-family: var(--font-ui);
     font-weight: 600;
     line-height: 1.12;
 }
@@ -598,6 +600,8 @@ body {
     border-radius: 28px;
     padding: clamp(16px, 1.8vw, 22px);
     background: var(--panel);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 }
 
 .landing-intro {
@@ -730,6 +734,24 @@ body {
     outline: none;
 }
 
+.explainer-video-block {
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+}
+
+.explainer-video-card {
+    margin-bottom: 0;
+}
+
+.video-reward-note {
+    margin: 2px 0 0;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
 .action-btn {
     font-size: 14px;
     padding: 10px 14px;
@@ -756,6 +778,8 @@ body {
     background:
         linear-gradient(135deg, rgba(94, 188, 103, 0.13), rgba(94, 188, 103, 0) 52%),
         var(--panel-strong);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 }
 
 .hero-panel h2 {
@@ -853,6 +877,64 @@ body {
     display: block;
     margin-top: 10px;
     font-size: clamp(28px, 2.8vw, 34px);
+}
+
+.insights-intro-panel {
+    background:
+        linear-gradient(135deg, rgba(94, 188, 103, 0.14), rgba(94, 188, 103, 0) 58%),
+        var(--panel);
+}
+
+.insights-intro-panel h2 {
+    max-width: 840px;
+}
+
+.insights-focus-panel,
+.insights-chart-panel,
+.insights-breakdown-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.insights-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.insight-summary-card {
+    padding: 18px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+}
+
+.insight-summary-card.primary {
+    background: var(--accent-surface);
+    border-color: var(--line-strong);
+}
+
+.insight-summary-card .insight-value {
+    font-size: clamp(26px, 2.7vw, 36px);
+}
+
+.chart-shell {
+    min-height: 320px;
+    padding: 10px 6px 0;
+}
+
+.chart-shell canvas {
+    width: 100% !important;
+    height: 320px !important;
+}
+
+.insight-callout {
+    margin-top: 18px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: var(--surface);
 }
 
 .home-explainer {
@@ -1122,6 +1204,10 @@ body {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .insights-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .explainer-detail-grid {
         grid-template-columns: 1fr;
     }
@@ -1201,7 +1287,8 @@ body {
 
     .stats-grid,
     .insights-grid,
-    .explainer-grid {
+    .explainer-grid,
+    .insights-summary-grid {
         grid-template-columns: 1fr;
     }
 
@@ -1314,6 +1401,15 @@ body {
 
     .video-card {
         gap: 14px;
+    }
+
+    .chart-shell {
+        min-height: 260px;
+        padding: 0;
+    }
+
+    .chart-shell canvas {
+        height: 260px !important;
     }
 
     .explainer-card h4 {

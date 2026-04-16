@@ -2,6 +2,7 @@
 
 const THEME_STORAGE_KEY = 'ecoArcadeDashboardTheme';
 const POPUP_TARGET_STORAGE_KEY = 'ecoArcadePopupTarget';
+const EMISSIONS_HISTORY_KEY = 'emissionsHistory';
 
 const awarenessVideos = [
     {
@@ -176,6 +177,7 @@ const awarenessVideos = [
 
 let currentVideoId = null;
 let currentVideoLoaded = false;
+let latestDashboardSnapshot = null;
 document.addEventListener('DOMContentLoaded', () => {
     initDashboard();
 });
@@ -190,6 +192,8 @@ function initDashboard() {
     setupTopbarStatusMenu();
     setupInsightShortcuts();
     setupBrandHomeShortcut();
+    setupStewardship();
+    setupWallet();
     renderData();
 
     chrome.storage.onChanged.addListener((changes, area) => {
@@ -266,6 +270,9 @@ function setupThemeToggle() {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         applyTheme(currentTheme);
         saveTheme(currentTheme);
+        if (latestDashboardSnapshot) {
+            renderDashboardData(latestDashboardSnapshot);
+        }
     });
 }
 
@@ -439,7 +446,7 @@ function setupInsightShortcuts() {
 
     if (totalCarbonCard) {
         totalCarbonCard.addEventListener('click', () => {
-            scrollToDashboardTarget('sites');
+            navigateToDashboardPage('insights.html', '#today-emissions');
         });
     }
 
@@ -451,13 +458,13 @@ function setupInsightShortcuts() {
 
     if (trackedSitesCard) {
         trackedSitesCard.addEventListener('click', () => {
-            scrollToDashboardTarget('sites');
+            navigateToDashboardPage('insights.html', '#today-sites');
         });
     }
 
     if (topSiteCard) {
         topSiteCard.addEventListener('click', () => {
-            scrollToDashboardTarget('sites');
+            navigateToDashboardPage('insights.html', '#today-sites');
         });
     }
 
@@ -469,7 +476,7 @@ function setupInsightShortcuts() {
 
     if (comparisonCard) {
         comparisonCard.addEventListener('click', () => {
-            scrollToDashboardTarget('userComparisonRow');
+            navigateToDashboardPage('insights.html', '#comparison-benchmarks');
         });
     }
 }
@@ -480,8 +487,12 @@ function setupBrandHomeShortcut() {
     if (!brandHomeBtn) return;
 
     brandHomeBtn.addEventListener('click', () => {
-        scrollToDashboardTarget('home');
+        navigateToDashboardPage('index.html');
     });
+}
+
+function navigateToDashboardPage(page, hash = '') {
+    window.location.href = `${page}${hash}`;
 }
 
 function scrollToDashboardTarget(targetId) {
@@ -562,6 +573,13 @@ function persistPopupTargetFallback(targetId) {
 function setupVideoSection() {
     const refreshBtn = document.getElementById('refreshVideoBtn');
     const loadVideoBtn = document.getElementById('loadVideoBtn');
+    const iframe = document.getElementById('awarenessVideo');
+    const thumbnail = document.getElementById('videoThumbnail');
+
+    if (!refreshBtn && !loadVideoBtn && !iframe && !thumbnail) {
+        return;
+    }
+
     if (refreshBtn) {
         refreshBtn.addEventListener('click', loadRandomAwarenessVideo);
     }
@@ -572,6 +590,10 @@ function setupVideoSection() {
     loadRandomAwarenessVideo();
 }
 
+let ytPlayer = null;
+let videoRewardGiven = false;
+let checkInterval = null;
+
 function loadRandomAwarenessVideo() {
     if (!awarenessVideos.length) return;
 
@@ -580,6 +602,11 @@ function loadRandomAwarenessVideo() {
     const selected = pool[Math.floor(Math.random() * pool.length)];
     currentVideoId = selected.id;
     currentVideoLoaded = false;
+    
+    if (ytPlayer && typeof ytPlayer.stopVideo === 'function') {
+        ytPlayer.stopVideo();
+    }
+    videoRewardGiven = false;
 
     const iframe = document.getElementById('awarenessVideo');
     const poster = document.getElementById('loadVideoBtn');
@@ -588,10 +615,13 @@ function loadRandomAwarenessVideo() {
     const description = document.getElementById('videoDescription');
     const link = document.getElementById('videoLink');
 
-    if (iframe) {
+    if (iframe && !ytPlayer) {
         iframe.src = '';
         iframe.classList.add('hidden');
+    } else if (iframe && ytPlayer) {
+        iframe.classList.add('hidden');
     }
+    
     if (poster) {
         poster.classList.remove('hidden');
     }
@@ -609,51 +639,93 @@ function loadSelectedVideo() {
     const poster = document.getElementById('loadVideoBtn');
     const appReferrer = `https://${chrome.runtime.id}.chromiumapp.org/`;
 
-    if (iframe) {
-        iframe.src = `https://www.youtube.com/embed/${currentVideoId}?rel=0&playsinline=1&origin=${encodeURIComponent(appReferrer)}&widget_referrer=${encodeURIComponent(appReferrer)}`;
-        iframe.classList.remove('hidden');
-    }
     if (poster) {
         poster.classList.add('hidden');
     }
+    if (iframe) {
+        iframe.classList.remove('hidden');
+    }
+
+    if (window.YT && window.YT.Player) {
+        if (ytPlayer) {
+            ytPlayer.loadVideoById(currentVideoId);
+        } else {
+            ytPlayer = new YT.Player('awarenessVideo', {
+                videoId: currentVideoId,
+                playerVars: {
+                    playsinline: 1,
+                    rel: 0,
+                    origin: appReferrer,
+                    widget_referrer: appReferrer
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+    } else {
+        if (iframe) iframe.src = `https://www.youtube.com/embed/${currentVideoId}?rel=0&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(appReferrer)}&widget_referrer=${encodeURIComponent(appReferrer)}`;
+    }
 
     currentVideoLoaded = true;
+    videoRewardGiven = false;
+}
+
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING) {
+        if (!checkInterval) {
+            checkInterval = setInterval(checkVideoProgress, 1000);
+        }
+    } else {
+        clearInterval(checkInterval);
+        checkInterval = null;
+    }
+}
+
+function checkVideoProgress() {
+    if (!ytPlayer || videoRewardGiven || typeof ytPlayer.getDuration !== 'function') return;
+    const duration = ytPlayer.getDuration();
+    const currentTime = ytPlayer.getCurrentTime();
+    
+    if (duration > 0 && currentTime / duration >= 0.7) {
+        videoRewardGiven = true;
+        awardVideoPoints();
+    }
+}
+
+function awardVideoPoints() {
+    chrome.storage.sync.get(['totalPoints'], (data) => {
+        const currentPoints = data.totalPoints || 0;
+        const newPoints = currentPoints + 50;
+        chrome.storage.sync.set({ totalPoints: newPoints }, () => {
+            alert('Congrats! You earned 50 EcoPoints for watching this awareness video!');
+            renderData();
+        });
+    });
 }
 
 function setupSectionNavigation() {
     const navLinks = Array.from(document.querySelectorAll('[data-section-link]'));
-    const sections = Array.from(document.querySelectorAll('[data-section]'));
+    if (!navLinks.length) return;
 
-    if (!navLinks.length || !sections.length) return;
-
-    const updateActiveLink = () => {
-        let currentSection = sections[0];
-
-        sections.forEach((section) => {
-            const rect = section.getBoundingClientRect();
-            if (rect.top <= 180) {
-                currentSection = section;
-            }
-        });
-
-        navLinks.forEach((link) => {
-            link.classList.toggle('active', link.dataset.sectionLink === currentSection.dataset.section);
-        });
-    };
+    const currentLoc = window.location.pathname.split('/').pop() || 'index.html';
 
     navLinks.forEach((link) => {
+        const targetPage = link.getAttribute('data-href');
+        // Check if the target page matches the current page, handle empty for index
+        if (targetPage === currentLoc || (currentLoc === '' && targetPage === 'index.html')) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+        
         link.addEventListener('click', (event) => {
             event.preventDefault();
-
-            const target = document.getElementById(link.dataset.sectionLink);
-            if (!target) return;
-
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (targetPage) {
+                window.location.href = targetPage;
+            }
         });
     });
-
-    document.addEventListener('scroll', updateActiveLink, { passive: true });
-    updateActiveLink();
 }
 
 function renderData() {
@@ -661,10 +733,13 @@ function renderData() {
         if (chrome.runtime.lastError || !response) {
             console.warn('EcoArcade: Dashboard snapshot unavailable. Using sync fallback.');
             chrome.storage.sync.get(['totalCO2', 'totalPoints', 'siteStats'], (data) => {
-                renderDashboardData({
-                    totalCO2: data.totalCO2 || 0,
-                    totalPoints: data.totalPoints || 0,
-                    siteStats: data.siteStats || {}
+                chrome.storage.local.get([EMISSIONS_HISTORY_KEY], (localData) => {
+                    renderDashboardData({
+                        totalCO2: data.totalCO2 || 0,
+                        totalPoints: data.totalPoints || 0,
+                        siteStats: data.siteStats || {},
+                        history: localData?.[EMISSIONS_HISTORY_KEY] || null
+                    });
                 });
             });
             return;
@@ -675,13 +750,22 @@ function renderData() {
 }
 
 function renderDashboardData(data) {
+    latestDashboardSnapshot = data;
+
     const totalCO2 = data.totalCO2 || 0;
     const totalPoints = data.totalPoints || 0;
     const siteStats = data.siteStats || {};
-    const domains = Object.keys(siteStats).sort((a, b) => siteStats[b].co2 - siteStats[a].co2);
+    const history = normalizeDashboardHistory(data.history);
+    const domains = sortSiteDomains(siteStats);
     const topDomain = domains[0];
     const topDomainStats = topDomain ? siteStats[topDomain] : null;
     const trackedSites = domains.length;
+    const todayEntry = history.daily[getLocalDayKey()] || createEmptyHistoryEntry();
+    const monthEntry = history.monthly[getLocalMonthKey()] || createEmptyHistoryEntry();
+    const todayDomains = sortSiteDomains(todayEntry.sites);
+    const monthDomains = sortSiteDomains(monthEntry.sites);
+    const todayTopDomain = todayDomains[0] || '';
+    const monthTopDomain = monthDomains[0] || '';
 
     const co2Display = document.getElementById('totalCO2');
     if (co2Display) co2Display.textContent = formatCO2(totalCO2);
@@ -723,9 +807,282 @@ function renderDashboardData(data) {
     }
 
     updateHeroSummary(totalCO2, trackedSites);
-    updateComparison(totalCO2);
+    updateComparison(todayEntry.totalCO2 || 0);
     updateTopSite(topDomain, topDomainStats);
     renderSiteStatsTable(domains, siteStats);
+    updateTodayInsights(todayEntry, todayTopDomain);
+    updateMonthlyInsights(monthEntry, monthTopDomain);
+    renderBreakdownTable('todaySiteStatsBody', todayEntry.sites, todayDomains, 'No tracked browsing recorded today yet. Open a few sites and come back.');
+    renderBreakdownTable('monthlySiteStatsBody', monthEntry.sites, monthDomains, 'No tracked browsing recorded this month yet. Keep browsing and this list will fill in.');
+    renderEmissionsChart(history);
+}
+
+let emissionsChartInstance = null;
+function renderEmissionsChart(history) {
+    const canvas = document.getElementById('emissionsChart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    const ctx = canvas.getContext('2d');
+    const style = getComputedStyle(document.documentElement);
+    const textColor = style.getPropertyValue('--text').trim() || '#eff8f5';
+    const mutedColor = style.getPropertyValue('--muted').trim() || '#9cb6af';
+    const lineColor = style.getPropertyValue('--line').trim() || 'rgba(132, 216, 201, 0.18)';
+    const accentColor = style.getPropertyValue('--accent').trim() || '#5ebc67';
+    const accentStrong = style.getPropertyValue('--accent-strong').trim() || '#559c49';
+
+    const dayKeys = buildTrailingDayKeys(7);
+    const labels = dayKeys.map((key) => formatTrendLabel(key));
+    const values = dayKeys.map((key) => roundChartValue(history.daily[key]?.totalCO2 || 0));
+
+    if (emissionsChartInstance) {
+        emissionsChartInstance.destroy();
+    }
+
+    emissionsChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Daily CO2 emissions (g)',
+                data: values,
+                backgroundColor: 'rgba(94, 188, 103, 0.16)',
+                borderColor: accentColor,
+                pointBackgroundColor: accentStrong,
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: accentStrong,
+                pointRadius: 4,
+                pointHoverRadius: 5,
+                borderWidth: 3,
+                fill: true,
+                tension: 0.28
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    grid: { color: lineColor },
+                    ticks: {
+                        color: mutedColor,
+                        font: { size: 12, family: 'Outfit, sans-serif' }
+                    }
+                },
+                y: {
+                    grid: { color: lineColor },
+                    ticks: {
+                        color: mutedColor,
+                        font: { size: 12, family: 'Outfit, sans-serif' },
+                        callback: (value) => `${value}g`
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: textColor,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        padding: 16,
+                        font: { family: 'Outfit, sans-serif', size: 12 }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => `${context.parsed.y.toFixed(2)}g`
+                    }
+                }
+            }
+        }
+    });
+
+    updateTrendSummary(dayKeys, values);
+}
+
+function normalizeDashboardHistory(history) {
+    return {
+        daily: cloneHistoryEntries(history?.daily),
+        monthly: cloneHistoryEntries(history?.monthly)
+    };
+}
+
+function cloneHistoryEntries(entries) {
+    if (!entries || typeof entries !== 'object') {
+        return {};
+    }
+
+    return Object.fromEntries(
+        Object.entries(entries).map(([key, value]) => [
+            key,
+            {
+                totalCO2: value?.totalCO2 || 0,
+                totalTime: value?.totalTime || 0,
+                sites: value?.sites || {}
+            }
+        ])
+    );
+}
+
+function createEmptyHistoryEntry() {
+    return {
+        totalCO2: 0,
+        totalTime: 0,
+        sites: {}
+    };
+}
+
+function getLocalDayKey(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function getLocalMonthKey(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
+}
+
+function sortSiteDomains(siteStats) {
+    return Object.keys(siteStats || {}).sort((a, b) => (siteStats[b]?.co2 || 0) - (siteStats[a]?.co2 || 0));
+}
+
+function updateTodayInsights(todayEntry, topDomain) {
+    const todayCO2 = document.getElementById('todayCO2');
+    const todayTime = document.getElementById('todayTimeTracked');
+    const todaySites = document.getElementById('todayTrackedSites');
+    const todayNote = document.getElementById('todayEmissionsNote');
+    const topSiteHint = document.getElementById('todayTopSiteHint');
+    const todayDomains = sortSiteDomains(todayEntry.sites);
+
+    if (todayCO2) todayCO2.textContent = formatCO2(todayEntry.totalCO2 || 0);
+    if (todayTime) todayTime.textContent = formatTime(todayEntry.totalTime || 0);
+    if (todaySites) todaySites.textContent = todayDomains.length;
+
+    if (todayNote) {
+        if (!todayDomains.length) {
+            todayNote.textContent = 'No emissions recorded today yet.';
+        } else {
+            todayNote.textContent = `Most of today's emissions are currently coming from ${topDomain}.`;
+        }
+    }
+
+    if (topSiteHint) {
+        if (!todayDomains.length) {
+            topSiteHint.textContent = 'A top site will appear here after browsing activity is recorded.';
+        } else {
+            const topStats = todayEntry.sites[topDomain];
+            topSiteHint.textContent = `${topDomain} leads today with ${formatCO2(topStats.co2)} over ${formatTime(topStats.time)}.`;
+        }
+    }
+}
+
+function updateMonthlyInsights(monthEntry, topDomain) {
+    const monthCO2 = document.getElementById('monthCO2');
+    const monthTime = document.getElementById('monthTimeTracked');
+    const monthSites = document.getElementById('monthTrackedSites');
+    const monthNote = document.getElementById('monthEmissionsNote');
+    const monthTopSiteHint = document.getElementById('monthTopSiteHint');
+    const monthDomains = sortSiteDomains(monthEntry.sites);
+
+    if (monthCO2) monthCO2.textContent = formatCO2(monthEntry.totalCO2 || 0);
+    if (monthTime) monthTime.textContent = formatTime(monthEntry.totalTime || 0);
+    if (monthSites) monthSites.textContent = monthDomains.length;
+
+    if (monthNote) {
+        if (!monthDomains.length) {
+            monthNote.textContent = 'No emissions recorded for this month yet.';
+        } else {
+            monthNote.textContent = `${formatCO2(monthEntry.totalCO2 || 0)} accumulated so far this month.`;
+        }
+    }
+
+    if (monthTopSiteHint) {
+        if (!monthDomains.length) {
+            monthTopSiteHint.textContent = 'The leading site for this month will appear here once data exists.';
+        } else {
+            const topStats = monthEntry.sites[topDomain];
+            monthTopSiteHint.textContent = `${topDomain} is the biggest monthly contributor at ${formatCO2(topStats.co2)} over ${formatTime(topStats.time)}.`;
+        }
+    }
+}
+
+function renderBreakdownTable(tableBodyId, siteStats, domains, emptyMessage) {
+    const tableBody = document.getElementById(tableBodyId);
+    if (!tableBody) return;
+
+    tableBody.innerHTML = '';
+
+    if (!domains.length) {
+        tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">${emptyMessage}</td></tr>`;
+        return;
+    }
+
+    domains.forEach((domain) => {
+        const stats = siteStats[domain];
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${domain}</td>
+            <td>${formatTime(stats.time)}</td>
+            <td>${formatCO2(stats.co2)}</td>
+            <td>${getImpactLevel(stats.co2)}</td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+}
+
+function buildTrailingDayKeys(count) {
+    const keys = [];
+    const today = new Date();
+
+    for (let offset = count - 1; offset >= 0; offset -= 1) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - offset);
+        keys.push(getLocalDayKey(date));
+    }
+
+    return keys;
+}
+
+function formatTrendLabel(dayKey) {
+    const [year, month, day] = dayKey.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' });
+}
+
+function updateTrendSummary(dayKeys, values) {
+    const trendSummary = document.getElementById('trendSummary');
+    if (!trendSummary || !dayKeys.length || !values.length) return;
+
+    const todayValue = values[values.length - 1] || 0;
+    const yesterdayValue = values[values.length - 2] || 0;
+
+    if (values.every((value) => value === 0)) {
+        trendSummary.textContent = 'No emissions have been recorded over the last seven days yet.';
+        return;
+    }
+
+    if (todayValue === yesterdayValue) {
+        trendSummary.textContent = `Today is sitting level with yesterday at ${formatCO2(todayValue)}.`;
+        return;
+    }
+
+    if (todayValue > yesterdayValue) {
+        trendSummary.textContent = `Today is running above yesterday by ${formatCO2(todayValue - yesterdayValue)}.`;
+        return;
+    }
+
+    trendSummary.textContent = `Today is lower than yesterday by ${formatCO2(yesterdayValue - todayValue)}.`;
+}
+
+function roundChartValue(value) {
+    return Number((value || 0).toFixed(2));
 }
 
 function updateComparison(totalCO2) {
@@ -747,18 +1104,18 @@ function updateComparison(totalCO2) {
 
     if (totalCO2 < kenyaDailyAvgGrams) {
         comparisonHeadline.textContent = 'Well below a typical daily footprint';
-        comparisonText.textContent = 'Your tracked browsing is lower than both the Kenya and global daily averages shown here.';
+        comparisonText.textContent = 'Your browsing today is lower than both the Kenya and global daily averages shown here.';
         return;
     }
 
     if (totalCO2 < globalDailyAvgGrams) {
         comparisonHeadline.textContent = 'Above Kenya average, below global average';
-        comparisonText.textContent = 'Your tracked browsing has moved past the Kenya daily average but remains below the global daily average.';
+        comparisonText.textContent = 'Your browsing today has moved past the Kenya daily average but remains below the global daily average.';
         return;
     }
 
     comparisonHeadline.textContent = 'Above the global daily comparison';
-    comparisonText.textContent = 'Your tracked browsing alone is now larger than the global daily comparison benchmark shown on this page.';
+    comparisonText.textContent = 'Your browsing today alone is now larger than the global daily comparison benchmark shown on this page.';
 }
 
 function updateTopSite(topDomain, topDomainStats) {
@@ -909,4 +1266,220 @@ function formatTime(ms) {
     }
 
     return `${minutes}m ${seconds}s`;
+}
+
+function setupStewardship() {
+    const fileInput = document.getElementById('actionImageInput');
+    const preview = document.getElementById('actionImagePreview');
+    const verifyBtn = document.getElementById('verifyActionBtn');
+    const resultPanel = document.getElementById('aiResultPanel');
+    const title = document.getElementById('aiRationaleTitle');
+    const text = document.getElementById('aiRationaleText');
+    let currentBase64 = null;
+
+    if (!fileInput || !verifyBtn) return;
+
+    fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentBase64 = e.target.result;
+                preview.src = currentBase64;
+                preview.classList.remove('hidden');
+                verifyBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.classList.add('hidden');
+            verifyBtn.disabled = true;
+            currentBase64 = null;
+        }
+    });
+
+    verifyBtn.addEventListener('click', async () => {
+        if (!currentBase64) return;
+        
+        verifyBtn.disabled = true;
+        fileInput.disabled = true; // No resubmission 
+        verifyBtn.textContent = 'Verifying EXIF & AI...';
+        resultPanel.classList.add('hidden');
+
+        try {
+            const file = fileInput.files[0];
+            let exifData = null;
+            try {
+                // Parse EXIF using exifr library loaded globally
+                exifData = await exifr.parse(file, ['latitude', 'longitude', 'DateTimeOriginal']);
+            } catch (e) {
+                console.warn('Exif parsing failed', e);
+            }
+
+            if (!exifData || !exifData.latitude || !exifData.longitude) {
+                throw new Error("Rejected: Missing GPS Metadata. Ensure Location Services were active when taking the photo.");
+            }
+
+            // 1. Verify with AI Copilot (Passing EXIF context)
+            const aiContext = `Timestamp: ${exifData.DateTimeOriginal}, GPS: ${exifData.latitude.toFixed(4)}, ${exifData.longitude.toFixed(4)}`;
+            const result = await window.aiCopilot.verifyActionImage(currentBase64, aiContext);
+            
+            if (result.verified) {
+                verifyBtn.textContent = 'Minting NFT...';
+                
+                // Create a unique URI for the Smart Contract (simulate IPFS uri locally)
+                const mockIpfsUri = `ipfs://action-${Date.now()}-${exifData.latitude.toFixed(2)}-${exifData.longitude.toFixed(2)}`;
+                
+                // 2. Mint NFT
+                const txHash = await window.blockchainReal.mintNFT(mockIpfsUri);
+                
+                // 3. Award Points
+                chrome.storage.sync.get(['totalPoints'], (data) => {
+                    const newPoints = (data.totalPoints || 0) + 150;
+                    chrome.storage.sync.set({ totalPoints: newPoints }, () => {
+                        title.textContent = 'Success! Action Verified';
+                        title.style.color = 'var(--success-color, #10b981)';
+                        text.innerHTML = `${result.rationale}<br><br><strong>+150 EcoPoints!</strong><br>NFT Minted Tx: <code style="font-size:10px">${txHash}</code>`;
+                        resultPanel.classList.remove('hidden');
+                        verifyBtn.textContent = 'Action Complete';
+                        renderData(); // Refresh UI
+                    });
+                });
+            } else {
+                title.textContent = 'Action Rejected';
+                title.style.color = 'var(--error-color, #ef4444)';
+                text.textContent = result.rationale;
+                resultPanel.classList.remove('hidden');
+                verifyBtn.textContent = 'Locked (No Resubmission)';
+            }
+        } catch (error) {
+            console.error(error);
+            title.textContent = 'Verification Error';
+            title.style.color = 'var(--error-color, #ef4444)';
+            text.textContent = error.message || 'An error occurred during verification.';
+            resultPanel.classList.remove('hidden');
+            verifyBtn.textContent = 'Locked due to error';
+        }
+    });
+}
+
+function setupWallet() {
+    const convertBtn = document.getElementById('convertTokensBtn');
+    const connectBtn = document.getElementById('connectWalletBtn');
+    const pointsDisplay = document.getElementById('walletEcoPoints');
+    const tokensDisplay = document.getElementById('walletEcoTokens');
+    const donateBtns = document.querySelectorAll('.donate-btn');
+
+    if (connectBtn) {
+        connectBtn.addEventListener('click', async () => {
+            try {
+                connectBtn.textContent = 'Connecting...';
+                const addr = await window.blockchainReal.connectWallet();
+                connectBtn.textContent = `Connected: ${addr.substring(0,6)}...${addr.substring(addr.length-4)}`;
+                connectBtn.disabled = true;
+            } catch (err) {
+                alert(err.message);
+                connectBtn.textContent = 'Connect Wallet';
+            }
+        });
+    }
+
+    if (!convertBtn) return;
+
+    function renderWallet() {
+        if (!window.ethereum) {
+            const guide = document.getElementById('metamaskGuide');
+            if (guide) guide.classList.remove('hidden');
+            if (connectBtn) connectBtn.disabled = true;
+        }
+
+        chrome.storage.sync.get(['totalPoints', 'ecoTokens'], (data) => {
+            const pts = Math.floor(data.totalPoints || 0);
+            const tkns = data.ecoTokens || 0;
+            if (pointsDisplay) pointsDisplay.textContent = pts;
+            if (tokensDisplay) tokensDisplay.textContent = tkns;
+            
+            // Disable convert if not enough points
+            if (pts < window.blockchainReal.tokenRate) {
+                convertBtn.disabled = true;
+            } else {
+                convertBtn.disabled = false;
+            }
+
+            donateBtns.forEach(btn => {
+                if (tkns < 1) btn.disabled = true;
+                else btn.disabled = false;
+            });
+        });
+    }
+
+    // Call once initially
+    renderWallet();
+
+    // Re-render when storage syncs (called inside initDashboard)
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === 'sync') {
+            if (changes.totalPoints || changes.ecoTokens) {
+                renderWallet();
+            }
+        }
+    });
+
+    convertBtn.addEventListener('click', async () => {
+        chrome.storage.sync.get(['totalPoints', 'ecoTokens'], async (data) => {
+            const currentPoints = data.totalPoints || 0;
+            const currentTokens = data.ecoTokens || 0;
+
+            try {
+                convertBtn.disabled = true;
+                convertBtn.textContent = 'Processing in Metamask...';
+                
+                const result = await window.blockchainReal.convertToTokens(currentPoints);
+                
+                // Deduct points, add tokens locally tracking state syncing with blockchain
+                const remainderPoints = currentPoints - (result.tokens * window.blockchainReal.tokenRate);
+                const newTokens = currentTokens + result.tokens;
+                
+                chrome.storage.sync.set({ 
+                    totalPoints: remainderPoints,
+                    ecoTokens: newTokens
+                }, () => {
+                    alert(`Successfully converted into ${result.tokens} EcoTokens!\nTxHash: ${result.txHash}`);
+                    convertBtn.textContent = 'Convert to Tokens (100:1)';
+                    renderWallet();
+                    renderData(); // Refresh rest of dashboard
+                });
+            } catch (err) {
+                alert(err.message);
+                convertBtn.textContent = 'Convert to Tokens (100:1)';
+                renderWallet();
+            }
+        });
+    });
+
+    donateBtns.forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            // Using a dummy project address since it's a prototype
+            const projectId = "0xProjectAddress1234567890123456789012345";
+            chrome.storage.sync.get(['ecoTokens'], async (data) => {
+                let tkns = data.ecoTokens || 0;
+                if (tkns >= 1) {
+                    try {
+                        btn.disabled = true;
+                        btn.textContent = 'Processing in Metamask...';
+                        const receipt = await window.blockchainReal.donateTokens(projectId, 1);
+                        tkns -= 1;
+                        chrome.storage.sync.set({ ecoTokens: tkns }, () => {
+                            alert(`Successfully donated 1 EcoToken to Kenya Reforestation!\nReceipt: ${receipt}`);
+                            btn.textContent = 'Donate 1 Token';
+                            renderWallet();
+                        });
+                    } catch (err) {
+                        alert(err.message);
+                        btn.textContent = 'Donate 1 Token';
+                        renderWallet();
+                    }
+                }
+            });
+        });
+    });
 }
