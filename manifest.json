@@ -7,7 +7,8 @@
     "tabs",
     "storage",
     "declarativeNetRequest",
-    "idle"
+    "idle",
+    "alarms"
   ],
   "host_permissions": [
     "https://www.youtube.com/*",
@@ -17,12 +18,37 @@
     "service_worker": "background.js",
     "type": "module"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com;"
   },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "panel/*",
+        "assets/icons/*",
+        "assets/lib/*",
+        "services/*"
+      ],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ]
+    }
+  ],
   "action": {
-    "default_popup": "popup/popup.html",
-    "default_title": "EcoArcade",
+    "default_title": "Open EcoArcade dashboard",
     "default_icon": {
       "16": "assets/icons/icon16.png",
       "48": "assets/icons/icon48.png",

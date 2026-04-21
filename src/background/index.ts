@@ -14,6 +14,60 @@ import {
 } from './sessionTracker';
 
 const DASHBOARD_URL = chrome.runtime.getURL('dashboard.html');
+const YOUTUBE_EMBED_RULE_IDS = [1001, 1002];
+
+async function ensureYouTubeEmbedRefererRules(): Promise<void> {
+  const appReferrer = `https://${chrome.runtime.id}.chromiumapp.org/`;
+  const youtubeEmbedRules = [
+    {
+      id: 1001,
+      priority: 1,
+      action: {
+        type: 'modifyHeaders',
+        requestHeaders: [
+          {
+            header: 'referer',
+            operation: 'set',
+            value: appReferrer
+          }
+        ]
+      },
+      condition: {
+        urlFilter: '||youtube.com/embed/',
+        resourceTypes: ['sub_frame'],
+        initiatorDomains: [chrome.runtime.id]
+      }
+    },
+    {
+      id: 1002,
+      priority: 1,
+      action: {
+        type: 'modifyHeaders',
+        requestHeaders: [
+          {
+            header: 'referer',
+            operation: 'set',
+            value: appReferrer
+          }
+        ]
+      },
+      condition: {
+        urlFilter: '||youtube-nocookie.com/embed/',
+        resourceTypes: ['sub_frame'],
+        initiatorDomains: [chrome.runtime.id]
+      }
+    }
+  ] as any;
+
+  try {
+    await chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: YOUTUBE_EMBED_RULE_IDS,
+      addRules: youtubeEmbedRules
+    });
+  } catch (error) {
+    console.error('EcoArcade: failed to apply YouTube embed referer rules.', error);
+  }
+}
 
 async function openDashboardPage(tab?: chrome.tabs.Tab): Promise<void> {
   const existingTabs = await chrome.tabs.query({});
@@ -42,11 +96,13 @@ async function handleTabUpdate(tabId: number, url: string): Promise<void> {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
+  void ensureYouTubeEmbedRefererRules();
   void initializeTrackingEnvironment();
   void restoreTrackingForFocusedTab();
 });
 
 chrome.runtime.onStartup.addListener(() => {
+  void ensureYouTubeEmbedRefererRules();
   void initializeTrackingEnvironment();
   void restoreTrackingForFocusedTab();
 });

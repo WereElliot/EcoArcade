@@ -1,169 +1,136 @@
-// EcoArcade AI Copilot Service (OpenAI Integration)
-// Implements key rotation using the provided keys
-
-const OPENAI_KEYS = [
-    "sk-abcdef1234567890abcdef1234567890abcdef12",
-    "sk-1234567890abcdef1234567890abcdef12345678",
-    "sk-abcdefabcdefabcdefabcdefabcdefabcdef12",
-    "sk-7890abcdef7890abcdef7890abcdef7890abcd",
-    "sk-1234abcd1234abcd1234abcd1234abcd1234abcd",
-    "sk-abcd1234abcd1234abcd1234abcd1234abcd1234",
-    "sk-5678efgh5678efgh5678efgh5678efgh5678efgh",
-    "sk-efgh5678efgh5678efgh5678efgh5678efgh5678",
-    "sk-ijkl1234ijkl1234ijkl1234ijkl1234ijkl1234",
-    "sk-mnop5678mnop5678mnop5678mnop5678mnop5678",
-    "sk-qrst1234qrst1234qrst1234qrst1234qrst1234",
-    "sk-uvwx5678uvwx5678uvwx5678uvwx5678uvwx5678",
-    "sk-1234ijkl1234ijkl1234ijkl1234ijkl1234ijkl",
-    "sk-5678mnop5678mnop5678mnop5678mnop5678mnop",
-    "sk-qrst5678qrst5678qrst5678qrst5678qrst5678",
-    "sk-uvwx1234uvwx1234uvwx1234uvwx1234uvwx1234",
-    "sk-1234abcd5678efgh1234abcd5678efgh1234abcd",
-    "sk-5678ijkl1234mnop5678ijkl1234mnop5678ijkl",
-    "sk-abcdqrstefghuvwxabcdqrstefghuvwxabcdqrst",
-    "sk-ijklmnop1234qrstijklmnop1234qrstijklmnop",
-    "sk-1234uvwx5678abcd1234uvwx5678abcd1234uvwx",
-    "sk-efghijkl5678mnopabcd1234efghijkl5678mnop",
-    "sk-mnopqrstuvwxabcdmnopqrstuvwxabcdmnopqrst",
-    "sk-ijklmnopqrstuvwxijklmnopqrstuvwxijklmnop",
-    "sk-abcd1234efgh5678abcd1234efgh5678abcd1234",
-    "sk-1234ijklmnop5678ijklmnop1234ijklmnop5678",
-    "sk-qrstefghuvwxabcdqrstefghuvwxabcdqrstefgh",
-    "sk-uvwxijklmnop1234uvwxijklmnop1234uvwxijkl",
-    "sk-abcd5678efgh1234abcd5678efgh1234abcd5678",
-    "sk-ijklmnopqrstuvwxijklmnopqrstuvwxijklmnop",
-    "sk-1234qrstuvwxabcd1234qrstuvwxabcd1234qrst",
-    "sk-efghijklmnop5678efghijklmnop5678efghijkl",
-    "sk-mnopabcd1234efghmnopabcd1234efghmnopabcd",
-    "sk-ijklqrst5678uvwxijklqrst5678uvwxijklqrst",
-    "sk-1234ijkl5678mnop1234ijkl5678mnop1234ijkl",
-    "sk-abcdqrstefgh5678abcdqrstefgh5678abcdqrst",
-    "sk-ijklmnopuvwx1234ijklmnopuvwx1234ijklmnop",
-    "sk-efgh5678abcd1234efgh5678abcd1234efgh5678",
-    "sk-mnopqrstijkl5678mnopqrstijkl5678mnopqrst",
-    "sk-1234uvwxabcd5678uvwxabcd1234uvwxabcd5678",
-    "sk-ijklmnop5678efghijklmnop5678efghijklmnop",
-    "sk-abcd1234qrstuvwxabcd1234qrstuvwxabcd1234",
-    "sk-1234efgh5678ijkl1234efgh5678ijkl1234efgh",
-    "sk-5678mnopqrstuvwx5678mnopqrstuvwx5678mnop",
-    "sk-abcdijkl1234uvwxabcdijkl1234uvwxabcdijkl",
-    "sk-ijklmnopabcd5678ijklmnopabcd5678ijklmnop",
-    "sk-1234efghqrstuvwx1234efghqrstuvwx1234efgh",
-    "sk-5678ijklmnopabcd5678ijklmnopabcd5678ijkl",
-    "sk-abcd1234efgh5678abcd1234efgh5678abcd1234",
-    "sk-ijklmnopqrstuvwxijklmnopqrstuvwxijklmnop"
-];
+// EcoArcade AI Copilot Service
+// Requires a real OpenAI API key stored in chrome.storage.local as "openAIApiKey".
 
 class AICopilot {
     constructor() {
-        this.currentKeyIndex = 0;
         this.apiEndpoint = 'https://api.openai.com/v1/chat/completions';
+        this.model = 'gpt-4o-mini';
     }
 
-    async _fetchWithRotation(payload) {
-        let attempts = 0;
-        while (attempts < Math.min(5, OPENAI_KEYS.length)) {
-            const currentKey = OPENAI_KEYS[this.currentKeyIndex];
-            try {
-                console.log(`[AI Copilot] Attempting request with key index ${this.currentKeyIndex}...`);
-                const response = await fetch(this.apiEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentKey}`
-                    },
-                    body: JSON.stringify(payload)
-                });
+    async getConfig() {
+        const data = await chrome.storage.local.get(['openAIApiKey', 'openAIModel']);
+        return {
+            apiKey: data.openAIApiKey || '',
+            model: data.openAIModel || this.model
+        };
+    }
 
-                if (response.ok) {
-                    return await response.json();
-                } else if (response.status === 401 || response.status === 429) {
-                    console.warn(`[AI Copilot] Key index ${this.currentKeyIndex} failed (${response.status}). Rotating key...`);
-                    this.currentKeyIndex = (this.currentKeyIndex + 1) % OPENAI_KEYS.length;
-                } else {
-                    const errBody = await response.text();
-                    console.error('[AI Copilot] API Error:', response.status, errBody);
-                    // It might be a bad request (400), don't rotate on bad request, just fail
-                    throw new Error(`OpenAI API Error: ${response.status} - ${errBody}`);
-                }
-            } catch (error) {
-                console.error('[AI Copilot] Request exception:', error);
-                // Rotate on fetch error (e.g., network)
-                this.currentKeyIndex = (this.currentKeyIndex + 1) % OPENAI_KEYS.length;
-            }
-            attempts++;
+    async isConfigured() {
+        const { apiKey } = await this.getConfig();
+        return Boolean(apiKey);
+    }
+
+    async requestCompletion(payload) {
+        const { apiKey, model } = await this.getConfig();
+
+        if (!apiKey) {
+            throw new Error('OpenAI API key is not configured.');
         }
-        throw new Error('All attempted OpenAI API keys failed. Please check your keys or network.');
+
+        const response = await fetch(this.apiEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model,
+                ...payload
+            })
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            throw new Error(`OpenAI request failed: ${response.status} ${errorBody}`);
+        }
+
+        return response.json();
     }
 
-    /**
-     * Verifies a stewardship action image using GPT-4 Vision, coupled with strict EXIF GPS constraints.
-     * @param {string} base64Image - The image data URL.
-     * @param {string} aiContext - Extracted EXIF data formatted tightly into a string.
-     * @returns {Promise<{verified: boolean, rationale: string}>}
-     */
-    async verifyActionImage(base64Image, aiContext = "No EXIF Context provided") {
-        const payload = {
-            model: "gpt-4o",
+    async verifyActionImage(base64Image, aiContext = 'No EXIF context supplied') {
+        // Some models/platforms expect message.content to be a string; send a single user message that includes
+        // the EXIF-derived context and a data URL for the image so servers receive a predictable text payload.
+        const userContent = `Action context:\n${aiContext}\n\nImage data (base64): ${base64Image}\n\nReturn JSON only with keys: verified, rationale, confidence.`;
+
+        const data = await this.requestCompletion({
             messages: [
                 {
-                    role: "system",
-                    content: "You are a strict AI environmental auditor. Verify if the uploaded photo shows genuine climate action (e.g., a newly planted tree in dirt, active trash cleanup). You MUST factor in the attached EXIF metadata. If EXIF is missing or suspiciously manipulated, or the image looks like a random stock photo with no clear user action, reject it. Respond strictly in JSON: { \"verified\": boolean, \"rationale\": \"short string explaining why\" }."
+                    role: 'system',
+                    content: 'You are a strict environmental verification agent. Judge whether the uploaded image shows authentic climate action by the user. Reject stock-style images, missing-action scenes, or any proof lacking trustworthy EXIF details. Reply as JSON with keys verified, rationale, and confidence.'
                 },
                 {
-                    role: "user",
-                    content: [
-                        { type: "text", text: `Context: ${aiContext}\nDoes this image prove real environmental stewardship action?` },
-                        { type: "image_url", image_url: { url: base64Image } }
-                    ]
+                    role: 'user',
+                    content: userContent
                 }
             ],
-            response_format: { type: "json_object" },
-            max_tokens: 150
-        };
+            response_format: { type: 'json_object' },
+            max_tokens: 220
+        });
+
+        // Be resilient to different response shapes. Prefer a string payload but handle object content.
+        const choice = data?.choices?.[0];
+        if (!choice) throw new Error('AI Copilot returned an unexpected response.');
+
+        let rawContent = choice.message?.content;
+        // If content is an object (e.g. multimodal output), try common places for text
+        if (!rawContent && Array.isArray(choice.message?.content_parts)) {
+            rawContent = choice.message.content_parts.map(p => p.text || '').join('\n');
+        }
+
+        let textPayload = '';
+        if (typeof rawContent === 'string') {
+            textPayload = rawContent;
+        } else if (typeof rawContent === 'object') {
+            // try common shapes
+            textPayload = rawContent.text || rawContent[0]?.text || JSON.stringify(rawContent);
+        }
 
         try {
-            const data = await this._fetchWithRotation(payload);
-            const content = data.choices[0].message.content;
-            return JSON.parse(content);
-        } catch (error) {
-            console.error('[AI Copilot] Image verification failed:', error);
-            // Strict rejection if API fails (no fallbacks allowed for real minting)
-            return {
-                verified: false,
-                rationale: "Verification failed securely. Network error during AI Audit."
-            };
+            return JSON.parse(textPayload);
+        } catch (err) {
+            // If parsing fails, throw a clear error including a short snippet for debugging
+            const snippet = (textPayload || '').slice(0, 500);
+            throw new Error(`AI response could not be parsed as JSON. Snippet: ${snippet}`);
         }
     }
 
-    /**
-     * Generates custom insights dynamically based on total stats
-     */
-    async generateInsights(totalCO2, points) {
-        const payload = {
-            model: "gpt-4o",
+    async generateInsights(totalCO2, points, streak, currentDomain) {
+        const data = await this.requestCompletion({
             messages: [
                 {
-                    role: "system",
-                    content: "You are an AI Copilot for EcoArcade. Provide a 1-sentence encouraging or advisory environmental insight based on the user's digital carbon footprint and game points."
+                    role: 'system',
+                    content: 'You are EcoArcade\'s climate behavior copilot. Return one short, practical insight and up to three short tip chips based on the user\'s browsing emissions and progress. Respond as JSON with keys insight and chips.'
                 },
                 {
-                    role: "user",
-                    content: `My estimated browsing emissions: ${totalCO2} grams. My EcoPoints: ${points}. Give me a short, personalized tip or insight.`
+                    role: 'user',
+                    content: `Current tab: ${currentDomain || 'unknown'}\nTotal browsing carbon: ${totalCO2} grams\nEco points: ${points}\nDaily streak: ${streak}`
                 }
             ],
-            max_tokens: 50
-        };
+            response_format: { type: 'json_object' },
+            max_tokens: 180
+        });
 
-        try {
-            const data = await this._fetchWithRotation(payload);
-            return data.choices[0].message.content.trim();
-        } catch (error) {
-            console.warn('[AI Copilot] Insight generation failed:', error);
-            return "Keep tracking your footprint to discover more patterns!";
-        }
+        return JSON.parse(data.choices[0].message.content);
+    }
+
+    async gradeEssay(prompt, essayText) {
+        const data = await this.requestCompletion({
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You grade short climate-awareness reflections. Score the essay on clarity, relevance, and actionability. Return JSON with score (0-100), pointsAwarded (integer), headline, and feedback.'
+                },
+                {
+                    role: 'user',
+                    content: `Prompt: ${prompt}\n\nEssay:\n${essayText}`
+                }
+            ],
+            response_format: { type: 'json_object' },
+            max_tokens: 220
+        });
+
+        return JSON.parse(data.choices[0].message.content);
     }
 }
 
-// Make accessible globally
 window.aiCopilot = new AICopilot();
