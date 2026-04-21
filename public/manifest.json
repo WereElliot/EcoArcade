@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "EcoArcade",
+  "version": "2.0.0",
+  "description": "Track browsing carbon, learn climate habits, verify real-world actions, and turn progress into rewards.",
+  "permissions": ["storage", "tabs", "alarms", "idle"],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*",
+    "https://www.youtube.com/*",
+    "https://www.youtube-nocookie.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Open EcoArcade",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com;"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/icons/*"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ]
+}
