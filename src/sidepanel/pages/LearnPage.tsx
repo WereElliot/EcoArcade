@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import type { DashboardSnapshot } from '../../types/domain';
 import { toLearnFeed } from '../config';
 import { FeedCard } from '../components/cards/FeedCard';
@@ -25,6 +25,7 @@ export function LearnPage({
     () => snapshot.learnCatalog.find((item) => item.kind === 'video'),
     [snapshot.learnCatalog]
   );
+  const playerRef = useRef<HTMLDivElement | null>(null);
   const filteredCatalog = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase();
     if (!normalizedQuery) {
@@ -45,11 +46,14 @@ export function LearnPage({
         body="The Learn section now behaves like a real content feed, with a featured playable lesson on top and daily.dev-style cards below for articles, quizzes, and reflections."
         cta="Start learning"
         asideLabel="Lesson Feed"
-        onCta={() => onCardAction('Featured lesson ready to play. Use the queue or the cards below to continue learning.')}
+        onCta={() => {
+          playerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          onCardAction('Jumped to the featured lesson player.');
+        }}
       />
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_340px]">
-        <div className="rounded-[24px] border border-white/10 bg-[#171c26] p-4">
+        <div ref={playerRef} className="rounded-[24px] border border-white/10 bg-[#171c26] p-4">
           <div className="aspect-video overflow-hidden rounded-[18px] border border-white/10 bg-black">
             <iframe
               className="h-full w-full"

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import type { DashboardSnapshot } from '../../types/domain';
 import { FeatureBanner } from '../components/cards/FeatureBanner';
 import { MetricPanel } from '../components/cards/MetricPanel';
@@ -19,6 +20,8 @@ export function ActPage({
   onBannerAction: () => void;
   onCardAction: (message: string) => void;
 }) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   return (
     <div className="space-y-5">
       <FeatureBanner
@@ -27,7 +30,11 @@ export function ActPage({
         body="This page now mirrors the same premium editorial spacing as the main feed, while keeping the upload step, verification summary, and reward state clearly separated."
         cta="Prepare proof"
         asideLabel="Action Mint"
-        onCta={onBannerAction}
+        onCta={() => {
+          onBannerAction();
+          fileInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          fileInputRef.current?.focus();
+        }}
       />
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_320px]">
@@ -40,6 +47,7 @@ export function ActPage({
 
           <div className="mt-6 rounded-[20px] border border-dashed border-white/12 bg-white/4 p-5">
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               onChange={(event) => onFileChange(event.target.files?.[0] ?? null)}

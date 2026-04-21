@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import type { DashboardSnapshot } from '../../types/domain';
 import { FeatureBanner } from '../components/cards/FeatureBanner';
 
@@ -10,6 +11,8 @@ export function CommunityPage({
   onJoin: (challengeId: string) => void;
   onCardAction: (message: string) => void;
 }) {
+  const challengesRef = useRef<HTMLElement | null>(null);
+
   return (
     <div className="space-y-5">
       <FeatureBanner
@@ -18,10 +21,13 @@ export function CommunityPage({
         body="Community missions now sit in spacious campaign cards with clearer progress, simpler join actions, and the same dark modern rhythm as the home feed."
         cta="Explore challenges"
         asideLabel="Community"
-        onCta={() => onCardAction('Community missions are live below. Pick any challenge to join instantly.')}
+        onCta={() => {
+          challengesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          onCardAction('Jumped to the live challenge list.');
+        }}
       />
 
-      <section className="grid gap-4 xl:grid-cols-2">
+      <section ref={challengesRef} className="grid gap-4 xl:grid-cols-2">
         {snapshot.challenges.map((challenge) => (
           <article
             key={challenge.id}
