@@ -27,6 +27,12 @@ export interface Challenge {
   rewardPoints: number;
 }
 
+export interface LearnArticleSection {
+  heading: string;
+  paragraphs: string[];
+  bullets?: string[];
+}
+
 export interface LearnItem {
   id: string;
   kind: 'article' | 'video' | 'quiz' | 'reflection';
@@ -38,6 +44,8 @@ export interface LearnItem {
   tags?: string[];
   thumbnailTheme?: string;
   mediaUrl?: string;
+  sourceName?: string;
+  articleSections?: LearnArticleSection[];
 }
 
 export interface DonationProject {

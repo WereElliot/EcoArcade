@@ -12,12 +12,11 @@ export default defineConfig({
       input: {
         dashboard: fileURLToPath(new URL('./dashboard.html', import.meta.url)),
         popup: fileURLToPath(new URL('./popup.html', import.meta.url)),
-        background: fileURLToPath(new URL('./src/background/index.ts', import.meta.url)),
-        content: fileURLToPath(new URL('./src/content/index.tsx', import.meta.url))
+        background: fileURLToPath(new URL('./src/background/index.ts', import.meta.url))
       },
       output: {
         entryFileNames: (chunkInfo) => {
-          if (chunkInfo.name === 'background' || chunkInfo.name === 'content') {
+          if (chunkInfo.name === 'background') {
             return '[name].js';
           }
 

@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import type { DashboardSnapshot, TabId } from '../../types/domain';
-import { getRankLabel, navItems } from '../config';
-import { BellIcon, FlameIcon, GemIcon, PointsIcon, SearchIcon } from './icons';
+import { getRankLabel } from '../../features/carbon/scoring';
+import { navItems } from '../config';
+import { BellIcon, FlameIcon, GemIcon, MoonIcon, PointsIcon, SearchIcon, SunIcon } from './icons';
 
 function StatChip({
   icon,
@@ -31,7 +32,9 @@ export function TopBar({
   onLogoClick,
   onStatClick,
   activeTab,
-  onTabSelect
+  onTabSelect,
+  themeMode,
+  onToggleTheme
 }: {
   snapshot: DashboardSnapshot;
   searchQuery: string;
@@ -41,9 +44,11 @@ export function TopBar({
   onStatClick: (tab: TabId) => void;
   activeTab: TabId;
   onTabSelect: (tab: TabId) => void;
+  themeMode: 'dark' | 'light';
+  onToggleTheme: () => void;
 }) {
   return (
-    <header className="border-b border-white/8 bg-[#0c1017] px-4 py-4 sm:px-5">
+    <header className="eco-topbar border-b px-4 py-4 sm:px-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-1 items-center gap-4">
           <button type="button" onClick={onLogoClick} className="xl:hidden">
@@ -58,7 +63,7 @@ export function TopBar({
               value={searchQuery}
               onChange={(event) => onSearchChange(event.target.value)}
               placeholder="Search climate lessons, actions, rewards"
-              className="h-12 w-full rounded-2xl border border-white/8 bg-white/5 pl-11 pr-24 text-sm text-white outline-none transition placeholder:text-white/35 focus:border-violet-400/35 focus:bg-white/7"
+              className="h-12 w-full rounded-2xl border border-white/8 bg-white/5 pl-11 pr-24 text-sm text-white outline-none transition placeholder:text-white/35 focus:border-emerald-400/35 focus:bg-white/7"
             />
             <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center gap-1 text-xs text-white/45">
               <kbd className="rounded-md border border-white/10 bg-white/6 px-2 py-1">Ctrl</kbd>
@@ -81,10 +86,21 @@ export function TopBar({
           <button
             type="button"
             onClick={() => onStatClick('insights')}
-            className="hidden rounded-2xl border border-violet-400/20 bg-violet-500/10 px-3 py-2 text-left sm:block"
+            className="hidden rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-left sm:block"
           >
-            <div className="text-sm font-semibold text-violet-100">{getRankLabel(snapshot.totalPoints)}</div>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-violet-100/50">Rank</div>
+            <div className="text-sm font-semibold text-emerald-100">{getRankLabel(snapshot.totalPoints)}</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-emerald-100/50">Rank</div>
+          </button>
+          <button
+            type="button"
+            onClick={onToggleTheme}
+            aria-label={`Switch to ${themeMode === 'dark' ? 'light' : 'dark'} mode`}
+            className="flex h-11 items-center gap-2 rounded-2xl border border-white/8 bg-white/5 px-3 text-white/78 transition hover:bg-white/8"
+          >
+            {themeMode === 'dark' ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
+            <span className="hidden text-xs font-medium sm:inline">
+              {themeMode === 'dark' ? 'Light' : 'Dark'}
+            </span>
           </button>
           <button
             type="button"
@@ -97,7 +113,7 @@ export function TopBar({
           <button
             type="button"
             onClick={onLogoClick}
-            className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.35),transparent_60%),linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] text-sm font-semibold text-white"
+            className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_top,rgba(34,197,94,0.35),transparent_60%),linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] text-sm font-semibold text-white"
           >
             EA
           </button>
@@ -112,7 +128,7 @@ export function TopBar({
             onClick={() => onTabSelect(item.id)}
             className={`min-w-fit rounded-full border px-4 py-2 text-sm transition ${
               activeTab === item.id
-                ? 'border-violet-400/30 bg-violet-500/12 text-white'
+                ? 'border-emerald-400/30 bg-emerald-500/12 text-white'
                 : 'border-white/10 bg-white/5 text-white/62'
             }`}
           >

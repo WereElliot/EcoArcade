@@ -1,5 +1,25 @@
 import type { BadgeId } from '../../types/domain';
 
+export function getRankLabel(points: number): string {
+  if (points >= 2200) {
+    return 'Climate Steward';
+  }
+
+  if (points >= 1000) {
+    return 'Gaia Guardian';
+  }
+
+  if (points >= 500) {
+    return 'Carbon Crusader';
+  }
+
+  if (points >= 100) {
+    return 'Eco Rookie';
+  }
+
+  return 'Recruit';
+}
+
 export function getLevelFromPoints(points: number): number {
   return Math.max(1, Math.floor(points / 180) + 1);
 }

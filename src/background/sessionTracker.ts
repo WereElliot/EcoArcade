@@ -6,7 +6,6 @@ import type {
   EcoArcadeState,
   EmissionsHistory,
   LiveSessionMetrics,
-  OverlaySnapshot,
   SiteStat,
   TrackingState
 } from '../types/domain';
@@ -247,10 +246,7 @@ export async function buildLiveMetricsForTab(tabId?: number, url?: string): Prom
   return buildSessionMetrics(trackingState, Date.now());
 }
 
-export async function buildDashboardSnapshot(
-  tabId?: number,
-  url?: string
-): Promise<DashboardSnapshot> {
+export async function buildDashboardSnapshot(tabId?: number, url?: string): Promise<DashboardSnapshot> {
   const appState = await getAppState();
   const snapshot: DashboardSnapshot = {
     ...appState,
@@ -274,18 +270,6 @@ export async function buildDashboardSnapshot(
   snapshot.dailyCO2 = getTodayEntry(history).totalCO2;
   snapshot.weeklyCO2 = getWeeklyTotal(history);
   return snapshot;
-}
-
-export async function buildOverlaySnapshot(tabId?: number, url?: string): Promise<OverlaySnapshot> {
-  const dashboard = await buildDashboardSnapshot(tabId, url);
-  return {
-    trackingEnabled: true,
-    currentDomain: dashboard.currentDomain,
-    currentTabCO2: dashboard.currentTabCO2,
-    dailyCO2: dashboard.dailyCO2,
-    weeklyCO2: dashboard.weeklyCO2,
-    totalPoints: dashboard.totalPoints
-  };
 }
 
 export async function restoreTrackingForFocusedTab(): Promise<void> {

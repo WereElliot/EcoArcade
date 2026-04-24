@@ -143,3 +143,24 @@ export function BookmarkIcon(props: IconProps) {
 export function ChevronRightIcon(props: IconProps) {
   return baseIcon(<path d="m9 18 6-6-6-6" />, props);
 }
+
+export function SunIcon(props: IconProps) {
+  return baseIcon(
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2.2" />
+      <path d="M12 19.8V22" />
+      <path d="m4.9 4.9 1.6 1.6" />
+      <path d="m17.5 17.5 1.6 1.6" />
+      <path d="M2 12h2.2" />
+      <path d="M19.8 12H22" />
+      <path d="m4.9 19.1 1.6-1.6" />
+      <path d="m17.5 6.5 1.6-1.6" />
+    </>,
+    props
+  );
+}
+
+export function MoonIcon(props: IconProps) {
+  return baseIcon(<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4 6.8 6.8 0 0 0 20 14.5Z" />, props);
+}

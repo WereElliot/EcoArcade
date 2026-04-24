@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatCO2 } from '../features/carbon/formatters';
+import { getRankLabel } from '../features/carbon/scoring';
 import type { DashboardSnapshot } from '../types/domain';
 
 const emptySnapshot: DashboardSnapshot = {
@@ -53,6 +54,7 @@ function MiniStat({
 
 export default function App() {
   const [snapshot, setSnapshot] = useState<DashboardSnapshot>(emptySnapshot);
+  const rankLabel = getRankLabel(snapshot.totalPoints);
 
   useEffect(() => {
     void sendMessage<DashboardSnapshot>({ action: 'getDashboardData' }).then((response) => {
@@ -78,23 +80,24 @@ export default function App() {
       </div>
 
       <div className="popup-hero">
-        <div className="popup-kicker">Current browsing impact</div>
-        <h1 className="popup-title">{snapshot.currentDomain || 'Ready to track your climate flow'}</h1>
+        <div className="popup-kicker">Current site CO2</div>
+        <h1 className="popup-title">{formatCO2(snapshot.currentTabCO2)}</h1>
         <p className="popup-copy">
-          Open the full dashboard for the daily.dev-style feed with insights, learning, actions, community, and rewards.
+          {snapshot.currentDomain || 'EcoArcade new tab dashboard'}
         </p>
       </div>
 
       <div className="popup-grid">
-        <MiniStat label="This tab" value={formatCO2(snapshot.currentTabCO2)} />
         <MiniStat label="Today" value={formatCO2(snapshot.dailyCO2)} />
         <MiniStat label="Points" value={String(snapshot.totalPoints)} />
+        <MiniStat label="Rank" value={rankLabel} />
         <MiniStat label="Streak" value={`${snapshot.streakDays}d`} />
       </div>
 
       <div className="popup-footer">
         <div className="popup-meta">
           <span>{snapshot.ecoTokens} ECO</span>
+          <span>{rankLabel}</span>
           <span>Level {snapshot.level}</span>
         </div>
         <button type="button" className="popup-button" onClick={openDashboard}>

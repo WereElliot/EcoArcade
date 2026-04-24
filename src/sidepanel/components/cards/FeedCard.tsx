@@ -3,15 +3,15 @@ import type { FeedViewModel } from '../../config';
 
 const accentClasses: Record<FeedViewModel['accent'], string> = {
   ocean:
-    'bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.55),transparent_26%),linear-gradient(160deg,#172534_10%,#11314d_55%,#0f1724_100%)]',
+    'bg-[radial-gradient(circle_at_top_left,rgba(74,222,128,0.35),transparent_26%),linear-gradient(160deg,#14241a_10%,#1b3f27_55%,#0d1711_100%)]',
   violet:
-    'bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.65),transparent_28%),linear-gradient(160deg,#241436_12%,#3a175e_52%,#101622_100%)]',
+    'bg-[radial-gradient(circle_at_top_left,rgba(34,197,94,0.55),transparent_28%),linear-gradient(160deg,#16311f_12%,#1f5d36_52%,#0f1711_100%)]',
   forest:
-    'bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.55),transparent_26%),linear-gradient(160deg,#13251e_12%,#164e3c_54%,#11161d_100%)]',
+    'bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.55),transparent_26%),linear-gradient(160deg,#13251e_12%,#164e3c_54%,#0f1711_100%)]',
   amber:
-    'bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.55),transparent_26%),linear-gradient(160deg,#2d2415_12%,#62451c_54%,#11161d_100%)]',
+    'bg-[radial-gradient(circle_at_top_left,rgba(163,230,53,0.45),transparent_26%),linear-gradient(160deg,#243016_12%,#46601e_54%,#101810_100%)]',
   indigo:
-    'bg-[radial-gradient(circle_at_top_left,rgba(129,140,248,0.58),transparent_26%),linear-gradient(160deg,#171d34_12%,#22316e_54%,#11161d_100%)]'
+    'bg-[radial-gradient(circle_at_top_left,rgba(74,222,128,0.42),transparent_26%),linear-gradient(160deg,#173120_12%,#245837_54%,#0f1711_100%)]'
 };
 
 export function FeedCard({
@@ -27,7 +27,7 @@ export function FeedCard({
 }) {
   return (
     <article
-      className={`group rounded-[24px] border border-white/10 bg-[#171c26] p-4 transition duration-200 hover:-translate-y-1 hover:border-white/16 hover:bg-[#1a202b] ${
+      className={`eco-surface eco-surface-hover group rounded-[24px] border p-4 transition duration-200 hover:-translate-y-1 hover:border-white/16 ${
         onOpen ? 'cursor-pointer' : ''
       }`}
       onClick={onOpen}
@@ -45,7 +45,7 @@ export function FeedCard({
       }
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="rounded-full bg-violet-500/12 px-3 py-1 text-xs font-medium text-violet-200">{item.meta}</span>
+        <span className="eco-accent-chip rounded-full px-3 py-1 text-xs font-medium">{item.meta}</span>
         <span className="text-xs text-white/42">{item.engagement.readTime}</span>
       </div>
 

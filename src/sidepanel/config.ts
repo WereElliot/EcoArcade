@@ -1,4 +1,5 @@
 import type { DashboardSnapshot, LearnItem, TabId } from '../types/domain';
+import { getRankLabel } from '../features/carbon/scoring';
 
 export interface NavItem {
   id: TabId;
@@ -30,13 +31,6 @@ export const navItems: NavItem[] = [
   { id: 'community', label: 'Community', subtitle: 'Challenges', icon: 'community' },
   { id: 'rewards', label: 'Rewards', subtitle: 'Tokens + donations', icon: 'rewards' }
 ];
-
-export function getRankLabel(points: number): string {
-  if (points >= 1000) return 'Gaia Guardian';
-  if (points >= 500) return 'Carbon Crusader';
-  if (points >= 100) return 'Eco Rookie';
-  return 'Seedling';
-}
 
 export function getQuickActionCards(snapshot: DashboardSnapshot): FeedViewModel[] {
   return [
@@ -101,10 +95,24 @@ export function toLearnFeed(item: LearnItem): FeedViewModel {
     title: item.title,
     summary: item.summary,
     tags: item.tags ?? ['#climate'],
-    meta: item.kind === 'video' ? 'Video Lesson' : item.kind === 'article' ? 'Article' : 'Interactive',
+    meta:
+      item.kind === 'video'
+        ? `Video / ${item.sourceName ?? 'YouTube'}`
+        : item.kind === 'article'
+          ? `Article / ${item.sourceName ?? 'Reading'}`
+          : item.kind === 'quiz'
+            ? 'Trivia'
+            : 'Reflection',
     accent: accentMap[item.thumbnailTheme ?? 'forest'] ?? 'forest',
     eyebrow: item.completed ? 'Completed' : item.kind,
-    imageLabel: item.kind === 'video' ? 'Watch' : item.kind === 'article' ? 'Read' : 'Explore',
+    imageLabel:
+      item.kind === 'video'
+        ? 'Watch'
+        : item.kind === 'article'
+          ? 'Read'
+          : item.kind === 'quiz'
+            ? 'Trivia'
+            : 'Reflect',
     engagement: {
       readTime: `${item.minutes} min`,
       comments: item.kind === 'video' ? 34 : 18,

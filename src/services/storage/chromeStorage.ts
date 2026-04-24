@@ -48,31 +48,149 @@ function defaultLearnCatalog(): LearnItem[] {
     {
       id: 'learn-1',
       kind: 'article',
-      title: 'Why lighter websites are climate-friendly',
-      summary: 'Understand how media weight, autoplay, and trackers increase digital emissions.',
+      title: 'Climate change evidence in one quick read',
+      summary: 'A grounded primer on the evidence behind climate change and why small digital choices still matter.',
       minutes: 4,
       points: 24,
       completed: false,
-      tags: ['#climate', '#carbon'],
-      thumbnailTheme: 'shoreline'
+      tags: ['#climate', '#science'],
+      thumbnailTheme: 'shoreline',
+      mediaUrl: 'https://climate.nasa.gov/evidence/',
+      sourceName: 'NASA Climate',
+      articleSections: [
+        {
+          heading: 'Why scientists are certain',
+          paragraphs: [
+            'NASA points to multiple independent signals that all move in the same direction: rising temperatures, shrinking ice sheets, warming oceans, sea-level rise, and more frequent heat extremes.',
+            'When several separate measurements tell the same story, confidence rises sharply. Climate evidence is not based on one graph or one model; it comes from a whole system of observations.'
+          ],
+          bullets: [
+            'Carbon dioxide concentrations are far above pre-industrial levels.',
+            'Glaciers and polar ice are losing mass over time.',
+            'The ocean is absorbing most of the extra heat trapped by greenhouse gases.'
+          ]
+        },
+        {
+          heading: 'Why this matters for digital life',
+          paragraphs: [
+            'The internet feels invisible, but it depends on data centers, networks, and devices that all draw power. That means our digital habits connect back to the same energy system driving climate pressure.',
+            'EcoArcade uses this kind of systems thinking: even when one browsing session looks small, repeated habits scale up quickly across millions of users.'
+          ]
+        }
+      ]
     },
     {
       id: 'learn-2',
       kind: 'video',
-      title: 'Stream smarter in three quick steps',
-      summary: 'A short video on lowering streaming energy without ruining the experience.',
+      title: 'What Is Climate Change?',
+      summary: 'A clear visual explainer that works well as the opening lesson for new EcoArcade users.',
       minutes: 3,
       points: 18,
       completed: false,
-      tags: ['#video', '#efficiency'],
+      tags: ['#video', '#climate'],
       thumbnailTheme: 'violet',
-      mediaUrl: 'https://www.youtube.com/watch?v=ZqiSiX8QD7o'
+      mediaUrl: 'https://www.youtube.com/watch?v=ZqiSiX8QD7o',
+      sourceName: 'Nat Geo'
     },
     {
       id: 'learn-3',
+      kind: 'article',
+      title: 'What is climate change and why does it matter now?',
+      summary: 'A broader explainer connecting emissions, adaptation, justice, and urgency.',
+      minutes: 5,
+      points: 26,
+      completed: false,
+      tags: ['#climate', '#awareness'],
+      thumbnailTheme: 'aurora',
+      mediaUrl: 'https://www.un.org/en/climatechange/what-is-climate-change',
+      sourceName: 'United Nations',
+      articleSections: [
+        {
+          heading: 'The big picture',
+          paragraphs: [
+            'The United Nations frames climate change as a shift in temperatures and weather patterns that is now being accelerated mainly by human activity, especially burning fossil fuels.',
+            'What makes this urgent is not only warming itself, but the knock-on effects: food insecurity, water stress, health risk, displacement, and pressure on already vulnerable communities.'
+          ],
+          bullets: [
+            'Mitigation means reducing the emissions causing the problem.',
+            'Adaptation means preparing communities for impacts already underway.',
+            'Climate justice matters because the harms are not shared equally.'
+          ]
+        },
+        {
+          heading: 'What action looks like',
+          paragraphs: [
+            'Useful action spans both everyday habits and larger systems change. Digital awareness, cleaner energy, efficient infrastructure, and community-level projects all fit together.',
+            'That is why EcoArcade mixes browsing feedback with real-world climate missions, donations, and community challenges instead of stopping at carbon tracking alone.'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'learn-4',
+      kind: 'video',
+      title: 'Renewable energy basics',
+      summary: 'Open a curated YouTube search focused on renewable energy basics and practical decarbonization.',
+      minutes: 6,
+      points: 24,
+      completed: false,
+      tags: ['#renewables', '#energy'],
+      thumbnailTheme: 'forest',
+      mediaUrl: 'https://www.youtube.com/results?search_query=renewable+energy+explained+national+geographic',
+      sourceName: 'YouTube'
+    },
+    {
+      id: 'learn-5',
+      kind: 'article',
+      title: 'Renewables explained for everyday decisions',
+      summary: 'A concise energy-system overview that helps connect clean power to real-world action.',
+      minutes: 5,
+      points: 22,
+      completed: false,
+      tags: ['#renewables', '#energy'],
+      thumbnailTheme: 'forest',
+      mediaUrl: 'https://www.iea.org/energy-system/renewables',
+      sourceName: 'IEA',
+      articleSections: [
+        {
+          heading: 'Why renewables matter',
+          paragraphs: [
+            'The IEA overview highlights how renewables reduce dependence on high-emission energy sources and make power systems more resilient over time.',
+            'For everyday users, the key takeaway is simple: the cleaner the grid becomes, the lower the emissions attached to digital activity, transport, and household electricity.'
+          ],
+          bullets: [
+            'Solar and wind keep expanding because costs have fallen significantly.',
+            'Cleaner grids lower the footprint of cloud services, streaming, and connected devices.',
+            'Storage, grid upgrades, and policy support are part of making renewables reliable at scale.'
+          ]
+        },
+        {
+          heading: 'How this connects to EcoArcade',
+          paragraphs: [
+            'Learning about renewables helps users understand that their carbon counter is not abstract. It reflects real energy demand moving through real infrastructure.',
+            'The stronger that infrastructure becomes, the more impact users can make by pairing digital efficiency with support for climate projects and better energy systems.'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'learn-6',
+      kind: 'video',
+      title: 'Digital carbon footprint awareness',
+      summary: 'Open a curated YouTube search about internet energy use, streaming, and the hidden cost of digital habits.',
+      minutes: 5,
+      points: 20,
+      completed: false,
+      tags: ['#internet', '#carbon'],
+      thumbnailTheme: 'violet',
+      mediaUrl: 'https://www.youtube.com/results?search_query=internet+carbon+footprint+explained',
+      sourceName: 'YouTube'
+    },
+    {
+      id: 'trivia-1',
       kind: 'quiz',
-      title: 'Carbon habits pulse check',
-      summary: 'A fast quiz that rewards clean browsing awareness.',
+      title: 'Trivia: what increases digital emissions fastest?',
+      summary: 'Test your awareness of the habits that usually drive a bigger browsing footprint.',
       minutes: 2,
       points: 20,
       completed: false,
@@ -80,15 +198,38 @@ function defaultLearnCatalog(): LearnItem[] {
       thumbnailTheme: 'forest'
     },
     {
-      id: 'learn-4',
+      id: 'trivia-2',
+      kind: 'quiz',
+      title: 'Trivia: climate awareness basics',
+      summary: 'A short question on the main driver behind modern global warming.',
+      minutes: 2,
+      points: 20,
+      completed: false,
+      tags: ['#quiz', '#climate'],
+      thumbnailTheme: 'shoreline'
+    },
+    {
+      id: 'trivia-3',
+      kind: 'quiz',
+      title: 'Trivia: the cleanest first move',
+      summary: 'Pick the strongest immediate digital habit for lowering carbon without losing usefulness.',
+      minutes: 2,
+      points: 20,
+      completed: false,
+      tags: ['#quiz', '#habit'],
+      thumbnailTheme: 'aurora'
+    },
+    {
+      id: 'learn-7',
       kind: 'reflection',
-      title: 'Write your climate commitment',
-      summary: 'Capture one digital habit you will change this week.',
+      title: 'Reflection: commit to one lighter digital habit',
+      summary: 'Write down one browsing or streaming habit you will change this week and lock in the intention.',
       minutes: 2,
       points: 16,
       completed: false,
       tags: ['#reflection', '#habit'],
-      thumbnailTheme: 'aurora'
+      thumbnailTheme: 'aurora',
+      sourceName: 'EcoArcade Prompt'
     }
   ];
 }

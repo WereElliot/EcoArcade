@@ -37,9 +37,9 @@ export function Sidebar({
   onQuickAction: () => void;
 }) {
   return (
-    <aside className="hidden w-[250px] shrink-0 border-r border-white/8 bg-[#0c1017] px-3 py-4 xl:block">
+    <aside className="eco-sidebar hidden w-[250px] shrink-0 border-r px-3 py-4 xl:block">
       <div className="flex items-center gap-3 px-3 pb-4">
-        <div className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-violet-500/40 via-blue-400/30 to-emerald-300/20 text-white">
+        <div className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-emerald-500/38 via-lime-400/28 to-green-200/18 text-white">
           <SparkIcon className="h-4 w-4" />
         </div>
         <div>
@@ -52,7 +52,7 @@ export function Sidebar({
         <button
           type="button"
           onClick={onQuickAction}
-          className="mb-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-[#10131c] transition hover:-translate-y-0.5"
+          className="eco-cta mb-5 flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
         >
           <span className="text-lg leading-none">+</span>
           Quick action
@@ -72,7 +72,7 @@ export function Sidebar({
                 active ? 'bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]' : 'text-white/64 hover:bg-white/6 hover:text-white'
               }`}
             >
-              <Icon className={`h-4 w-4 ${active ? 'text-violet-300' : 'text-white/55'}`} />
+              <Icon className={`h-4 w-4 ${active ? 'text-emerald-300' : 'text-white/55'}`} />
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-medium">{item.label}</div>
                 <div className="truncate text-xs text-white/42">{item.subtitle}</div>
@@ -84,8 +84,8 @@ export function Sidebar({
       </div>
 
       <div className="mt-6 px-3">
-        <div className="rounded-[22px] border border-violet-400/20 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.22),transparent_40%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-4">
-          <p className="text-xs uppercase tracking-[0.28em] text-violet-200/70">Eco Plus</p>
+        <div className="rounded-[22px] border border-emerald-400/20 bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.22),transparent_40%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-4">
+          <p className="text-xs uppercase tracking-[0.28em] text-emerald-200/70">Eco Plus</p>
           <p className="mt-2 text-sm font-semibold text-white">Level up with premium climate missions.</p>
         </div>
       </div>

@@ -8,6 +8,8 @@ import { ActPage } from './pages/ActPage';
 import { CommunityPage } from './pages/CommunityPage';
 import { RewardsPage } from './pages/RewardsPage';
 
+const THEME_STORAGE_KEY = 'ecoarcade-theme-mode';
+
 const emptySnapshot: DashboardSnapshot = {
   totalCO2: 0,
   totalPoints: 0,
@@ -42,12 +44,26 @@ async function sendMessage<T>(message: object): Promise<T | null> {
   }
 }
 
+function getInitialThemeMode(): 'dark' | 'light' {
+  if (typeof window === 'undefined') {
+    return 'dark';
+  }
+
+  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (storedTheme === 'light' || storedTheme === 'dark') {
+    return storedTheme;
+  }
+
+  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>('insights');
   const [snapshot, setSnapshot] = useState<DashboardSnapshot>(emptySnapshot);
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [actionStatus, setActionStatus] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [themeMode, setThemeMode] = useState<'dark' | 'light'>(getInitialThemeMode);
 
   const refreshSnapshot = async () => {
     const response = await sendMessage<DashboardSnapshot>({ action: 'getDashboardData' });
@@ -66,6 +82,11 @@ export default function App() {
 
     return () => window.clearInterval(intervalId);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = themeMode;
+    window.localStorage.setItem(THEME_STORAGE_KEY, themeMode);
+  }, [themeMode]);
 
   const completeLearnItem = async (itemId: string) => {
     const response = await sendMessage<{ success: boolean; snapshot: DashboardSnapshot }>({
@@ -130,7 +151,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f16] text-white">
+    <div className="eco-shell min-h-screen">
       <div className="flex min-h-screen">
         <Sidebar
           activeTab={activeTab}
@@ -154,11 +175,13 @@ export default function App() {
             onStatClick={setActiveTab}
             activeTab={activeTab}
             onTabSelect={setActiveTab}
+            themeMode={themeMode}
+            onToggleTheme={() => setThemeMode((current) => (current === 'dark' ? 'light' : 'dark'))}
           />
           <main className="px-4 py-5 sm:px-5">
             <div className="mx-auto max-w-[1080px]">
               {actionStatus ? (
-                <div className="mb-4 rounded-[18px] border border-violet-400/18 bg-violet-500/8 px-4 py-3 text-sm text-violet-100/86">
+                <div className="eco-toast mb-4 rounded-[18px] border px-4 py-3 text-sm">
                   {actionStatus}
                 </div>
               ) : null}

@@ -1,8 +1,7 @@
-import type { DashboardSnapshot, OverlaySnapshot } from '../../types/domain';
+import type { DashboardSnapshot } from '../../types/domain';
 
 export type RuntimeRequest =
   | { action: 'getDashboardData' }
-  | { action: 'getOverlaySnapshot'; pageUrl?: string }
   | { action: 'openEcoArcadeDashboard' }
   | { action: 'completeLearnItem'; itemId: string }
   | { action: 'joinChallenge'; challengeId: string }
@@ -11,6 +10,5 @@ export type RuntimeRequest =
 
 export type RuntimeResponse =
   | DashboardSnapshot
-  | OverlaySnapshot
   | { success: boolean; reason?: string }
   | { success: true; snapshot: DashboardSnapshot };
