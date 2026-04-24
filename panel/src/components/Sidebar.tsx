@@ -64,48 +64,48 @@ interface SidebarProps {
 
 export function Sidebar({ activeTab, onSelect, theme, onThemeToggle, totals }: SidebarProps) {
   return (
-    <aside className="sticky top-4 space-y-6 rounded-[32px] border border-white/10 bg-slate-950/80 p-5 shadow-soft backdrop-blur-xl lg:top-6">
-      <div className="rounded-[28px] border border-white/10 bg-slate-900/90 p-5 shadow-[0_18px_44px_rgba(1,12,15,0.25)]">
+    <aside className="sticky top-4 space-y-6 rounded-[16px] border border-emerald-200 bg-emerald-50 p-5 shadow-soft backdrop-blur-xl lg:top-6">
+      <div className="rounded-[28px] border border-emerald-200 bg-white p-5 shadow-[0_18px_44px_rgba(16,185,129,0.15)]">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-800/80 ring-1 ring-white/10">
+          <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-emerald-100 ring-1 ring-emerald-200">
             <img src="../assets/icons/logo.png" alt="EcoArcade" className="h-8 w-8 object-contain" />
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-emerald-200/80">EcoArcade</p>
-            <h2 className="text-lg font-semibold text-white">Planet-friendly browsing</h2>
+            <p className="text-xs uppercase tracking-[0.28em] text-emerald-600">EcoArcade</p>
+            <h2 className="text-lg font-semibold text-gray-900">Planet-friendly browsing</h2>
           </div>
         </div>
-        <p className="mt-4 text-sm leading-6 text-slate-300">A premium climate dashboard built for calm daily tracking, verified action, and reward-based sustainability.</p>
+        <p className="mt-4 text-sm leading-6 text-gray-500">A premium climate dashboard built for calm daily tracking, verified action, and reward-based sustainability.</p>
       </div>
 
-      <div className="grid gap-3 rounded-[28px] border border-white/10 bg-slate-900/90 p-4">
+      <div className="grid gap-3 rounded-[28px] border border-emerald-200 bg-white p-4">
         {navItems.map((item) => (
           <button
             key={item.id}
             type="button"
             className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left text-sm transition ${
               activeTab === item.id
-                ? 'border-emerald-400/30 bg-emerald-400/10 text-white shadow-soft'
-                : 'border-transparent text-slate-300 hover:border-white/10 hover:bg-white/5'
+                ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-soft'
+                : 'border-transparent text-gray-600 hover:border-emerald-200 hover:bg-emerald-50'
             }`}
             onClick={() => onSelect(item.id)}
             aria-current={activeTab === item.id ? 'page' : undefined}
           >
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white/5 text-emerald-300">{item.icon}</span>
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">{item.icon}</span>
             <span className="font-medium">{item.label}</span>
           </button>
         ))}
       </div>
 
-      <div className="space-y-4 rounded-[28px] border border-white/10 bg-emerald-300/8 p-5 shadow-soft text-slate-50">
+      <div className="space-y-4 rounded-[28px] border border-emerald-200 bg-emerald-50 p-5 shadow-soft text-gray-700">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-emerald-100/80">Quick summary</p>
-            <h3 className="mt-2 text-sm font-semibold text-white">Today’s momentum</h3>
+            <p className="text-xs uppercase tracking-[0.28em] text-emerald-600">Quick summary</p>
+            <h3 className="mt-2 text-sm font-semibold text-gray-900">Today's momentum</h3>
           </div>
           <button
             type="button"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 transition hover:bg-white/10"
+            className="rounded-full border border-emerald-200 bg-white px-3 py-2 text-sm text-emerald-600 transition hover:bg-emerald-100"
             onClick={onThemeToggle}
           >
             {theme === 'dark' ? 'Light' : 'Dark'}
@@ -113,13 +113,13 @@ export function Sidebar({ activeTab, onSelect, theme, onThemeToggle, totals }: S
         </div>
 
         <div className="grid gap-3">
-          <div className="rounded-3xl bg-slate-950/80 p-4">
-            <p className="text-xs uppercase tracking-[0.28em] text-emerald-100/75">Total carbon</p>
-            <p className="mt-2 text-2xl font-semibold text-white">{totals.totalCO2.toFixed(1)}g</p>
+          <div className="rounded-3xl bg-white p-4">
+            <p className="text-xs uppercase tracking-[0.28em] text-emerald-600">Total carbon</p>
+            <p className="mt-2 text-2xl font-semibold text-gray-900">{totals.totalCO2.toFixed(1)}g</p>
           </div>
-          <div className="rounded-3xl bg-slate-950/80 p-4">
-            <p className="text-xs uppercase tracking-[0.28em] text-emerald-100/75">Eco points</p>
-            <p className="mt-2 text-2xl font-semibold text-white">{totals.totalPoints}</p>
+          <div className="rounded-3xl bg-white p-4">
+            <p className="text-xs uppercase tracking-[0.28em] text-emerald-600">Eco points</p>
+            <p className="mt-2 text-2xl font-semibold text-gray-900">{totals.totalPoints}</p>
           </div>
         </div>
       </div>

@@ -17,19 +17,19 @@ const articles = [
 export function LearnSection({ totalPoints }: LearnSectionProps) {
   return (
     <div className="space-y-6">
-      <header className="rounded-[32px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+      <header className="rounded-[16px] border border-gray-200 bg-white p-6 shadow-soft">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.32em] text-emerald-200/70">Learn</p>
-            <h2 className="mt-2 text-3xl font-semibold text-white">Earn points while expanding your climate awareness.</h2>
+            <p className="text-xs uppercase tracking-[0.32em] text-emerald-600">Learn</p>
+            <h2 className="mt-2 text-3xl font-semibold text-gray-900">Earn points while expanding your climate awareness.</h2>
           </div>
-          <span className="rounded-full bg-emerald-400/15 px-4 py-2 text-sm uppercase tracking-[0.28em] text-emerald-100">{totalPoints} points collected</span>
+          <span className="rounded-full bg-emerald-100 px-4 py-2 text-sm uppercase tracking-[0.28em] text-emerald-600">{totalPoints} points collected</span>
         </div>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">Watch videos, read articles, and answer adaptive quizzes. Every meaningful learning step awards points and nudges you toward verified climate action.</p>
+        <p className="mt-4 max-w-2xl text-sm leading-7 text-gray-500">Watch videos, read articles, and answer adaptive quizzes. Every meaningful learning step awards points and nudges you toward verified climate action.</p>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <section className="space-y-5 rounded-[32px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+        <section className="space-y-5 rounded-[16px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm uppercase tracking-[0.32em] text-emerald-200/70">Video vault</p>
@@ -43,7 +43,7 @@ export function LearnSection({ totalPoints }: LearnSectionProps) {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-base font-semibold text-white">{video.title}</p>
-                    <p className="mt-1 text-sm text-slate-400">{video.duration} watch • +{video.reward} pts</p>
+                    <p className="mt-1 text-sm text-slate-400">{video.duration} watch ï¿½ +{video.reward} pts</p>
                   </div>
                   <button className="rounded-full bg-emerald-400/15 px-4 py-2 text-sm text-emerald-100 transition hover:bg-emerald-400/25">Start</button>
                 </div>
@@ -52,7 +52,7 @@ export function LearnSection({ totalPoints }: LearnSectionProps) {
           </div>
         </section>
 
-        <section className="space-y-5 rounded-[32px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+        <section className="space-y-5 rounded-[16px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm uppercase tracking-[0.32em] text-emerald-200/70">Articles</p>
@@ -66,7 +66,7 @@ export function LearnSection({ totalPoints }: LearnSectionProps) {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-base font-semibold text-white">{article.title}</p>
-                    <p className="mt-1 text-sm text-slate-400">{article.readTime} read • +{article.reward} pts</p>
+                    <p className="mt-1 text-sm text-slate-400">{article.readTime} read ï¿½ +{article.reward} pts</p>
                   </div>
                   <button className="rounded-full bg-cyan-400/15 px-4 py-2 text-sm text-cyan-100 transition hover:bg-cyan-400/25">Read</button>
                 </div>
@@ -76,7 +76,7 @@ export function LearnSection({ totalPoints }: LearnSectionProps) {
         </section>
       </div>
 
-      <section className="rounded-[32px] border border-white/10 bg-emerald-400/10 p-6 shadow-soft">
+      <section className="rounded-[16px] border border-white/10 bg-emerald-400/10 p-6 shadow-soft">
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-3xl bg-white/5 p-4">
             <p className="text-xs uppercase tracking-[0.28em] text-emerald-200/70">Quiz power</p>

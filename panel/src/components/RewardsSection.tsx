@@ -1,7 +1,7 @@
 export function RewardsSection() {
   return (
     <div className="space-y-6">
-      <header className="rounded-[32px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+      <header className="rounded-[16px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.32em] text-emerald-200/70">Rewards</p>
@@ -13,7 +13,7 @@ export function RewardsSection() {
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <section className="rounded-[32px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+        <section className="rounded-[16px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm uppercase tracking-[0.32em] text-emerald-200/70">Convert points</p>
@@ -30,7 +30,7 @@ export function RewardsSection() {
           </div>
         </section>
 
-        <section className="rounded-[32px] border border-white/10 bg-emerald-400/10 p-6 shadow-soft">
+        <section className="rounded-[16px] border border-white/10 bg-emerald-400/10 p-6 shadow-soft">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm uppercase tracking-[0.32em] text-emerald-200/70">Donations</p>

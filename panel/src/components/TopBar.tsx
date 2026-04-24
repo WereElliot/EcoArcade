@@ -18,7 +18,7 @@ const rankLabel = (points: number) => {
 
 export function TopBar({ searchValue, onSearchChange, totals, theme, onThemeToggle }: TopBarProps) {
   return (
-    <div className="rounded-[32px] border border-white/10 bg-slate-950/85 p-5 shadow-soft backdrop-blur-xl transition duration-300">
+    <div className="rounded-[16px] border border-white/10 bg-slate-950/85 p-5 shadow-soft backdrop-blur-xl transition duration-300">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-emerald-400/10 text-emerald-200 ring-1 ring-emerald-400/15">

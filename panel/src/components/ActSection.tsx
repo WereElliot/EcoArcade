@@ -14,7 +14,7 @@ const actions = [
 export function ActSection() {
   return (
     <div className="space-y-6">
-      <header className="rounded-[32px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+      <header className="rounded-[16px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.32em] text-emerald-200/70">Act</p>
@@ -26,7 +26,7 @@ export function ActSection() {
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <section className="rounded-[32px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+        <section className="rounded-[16px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
               <div>
@@ -35,15 +35,15 @@ export function ActSection() {
               </div>
               <span className="rounded-full bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.28em] text-slate-300">Secure</span>
             </div>
-            <div className="rounded-[28px] border border-dashed border-white/10 bg-white/5 p-6 text-center text-slate-300">
+            <div className="rounded-[12px] border border-dashed border-white/10 bg-white/5 p-6 text-center text-slate-300">
               <p className="text-base font-semibold text-white">Drag and drop a photo or choose a file</p>
-              <p className="mt-2 text-sm text-slate-400">PNG, JPEG, or HEIC • GPS metadata required • max 12MB</p>
+              <p className="mt-2 text-sm text-slate-400">PNG, JPEG, or HEIC ï¿½ GPS metadata required ï¿½ max 12MB</p>
               <button type="button" className="mt-5 rounded-full bg-emerald-400/15 px-6 py-2 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-400/25">Upload proof</button>
             </div>
           </div>
         </section>
 
-        <section className="rounded-[32px] border border-white/10 bg-emerald-400/10 p-6 shadow-soft">
+        <section className="rounded-[16px] border border-white/10 bg-emerald-400/10 p-6 shadow-soft">
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
               <div>

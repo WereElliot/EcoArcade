@@ -23,7 +23,7 @@ export function HomeDashboard({ data, loading }: HomeDashboardProps) {
   return (
     <div className="space-y-6">
       <section className="grid gap-6 xl:grid-cols-[1.55fr_0.95fr]">
-        <div className="rounded-[32px] border border-white/10 bg-slate-950/85 p-8 shadow-soft">
+        <div className="rounded-[16px] border border-white/10 bg-slate-950/85 p-8 shadow-soft">
           <div className="flex flex-col gap-6">
             <div className="space-y-4">
               <p className="text-xs uppercase tracking-[0.32em] text-emerald-200/70">Home / Insights</p>
@@ -32,12 +32,12 @@ export function HomeDashboard({ data, loading }: HomeDashboardProps) {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[28px] border border-white/10 bg-gradient-to-br from-emerald-400/10 to-slate-950/60 p-6 shadow-glow">
+              <div className="rounded-[12px] border border-white/10 bg-gradient-to-br from-emerald-400/10 to-slate-950/60 p-6 shadow-glow">
                 <p className="text-sm uppercase tracking-[0.3em] text-emerald-100/75">Today</p>
                 <p className="mt-4 text-5xl font-semibold text-white">{loading ? '—' : `${data.dailyCO2.toFixed(1)}g`}</p>
                 <p className="mt-3 text-sm text-slate-300">Equivalent to {loading ? '—' : comparison}.</p>
               </div>
-              <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-6 shadow-soft">
+              <div className="rounded-[12px] border border-white/10 bg-slate-900/80 p-6 shadow-soft">
                 <p className="text-sm uppercase tracking-[0.3em] text-emerald-200/70">Current tab</p>
                 <p className="mt-4 text-5xl font-semibold text-white">{loading ? '—' : `${data.currentTabCO2.toFixed(1)}g`}</p>
                 <p className="mt-3 text-sm text-slate-400">Live carbon from your active tab.</p>
@@ -62,7 +62,7 @@ export function HomeDashboard({ data, loading }: HomeDashboardProps) {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-[32px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+          <div className="rounded-[16px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.32em] text-emerald-200/70">AI Climate Guardian</p>
@@ -73,7 +73,7 @@ export function HomeDashboard({ data, loading }: HomeDashboardProps) {
             <p className="mt-5 text-sm leading-7 text-slate-300">Your browsing pattern is calm today. Keep this flow by closing idle tabs, switching to lower-bandwidth modes when streaming, and checking in on daily impact before hour two.</p>
           </div>
 
-          <div className="rounded-[32px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+          <div className="rounded-[16px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
             <p className="text-xs uppercase tracking-[0.32em] text-emerald-200/70">Progress rings</p>
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
               {[
@@ -97,17 +97,17 @@ export function HomeDashboard({ data, loading }: HomeDashboardProps) {
       </section>
 
       <section className="grid gap-5 lg:grid-cols-3">
-        <div className="rounded-[28px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+        <div className="rounded-[12px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
           <p className="text-sm uppercase tracking-[0.32em] text-emerald-200/70">Momentum</p>
           <h3 className="mt-3 text-xl font-semibold text-white">Your carbon actions today</h3>
           <p className="mt-4 text-sm text-slate-300">Keep your browsing light and earn points by choosing low-carbon actions in the Learn and Act sections.</p>
         </div>
-        <div className="rounded-[28px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+        <div className="rounded-[12px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
           <p className="text-sm uppercase tracking-[0.32em] text-emerald-200/70">Rewards</p>
           <h3 className="mt-3 text-xl font-semibold text-white">Eco Tokens in reach</h3>
           <p className="mt-4 text-sm text-slate-300">Convert points into Solana tokens and donate to verified climate projects in the Rewards tab.</p>
         </div>
-        <div className="rounded-[28px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
+        <div className="rounded-[12px] border border-white/10 bg-slate-950/85 p-6 shadow-soft">
           <p className="text-sm uppercase tracking-[0.32em] text-emerald-200/70">Community</p>
           <h3 className="mt-3 text-xl font-semibold text-white">Join live challenges</h3>
           <p className="mt-4 text-sm text-slate-300">Take part in daily and weekly climate quests, see leaderboards, and compete for the top spot.</p>
