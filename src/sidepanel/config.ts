@@ -97,14 +97,14 @@ export function toLearnFeed(item: LearnItem): FeedViewModel {
     tags: item.tags ?? ['#climate'],
     meta:
       item.kind === 'video'
-        ? `Video / ${item.sourceName ?? 'YouTube'}`
+        ? `Video / ${item.category ?? item.sourceName ?? 'YouTube'}`
         : item.kind === 'article'
-          ? `Article / ${item.sourceName ?? 'Reading'}`
+          ? `Article / ${item.category ?? item.sourceName ?? 'Reading'}`
           : item.kind === 'quiz'
-            ? 'Trivia'
+            ? `Trivia / ${item.difficulty ?? 'mixed'}`
             : 'Reflection',
     accent: accentMap[item.thumbnailTheme ?? 'forest'] ?? 'forest',
-    eyebrow: item.completed ? 'Completed' : item.kind,
+    eyebrow: item.completed ? 'Completed' : `${item.kind}${item.difficulty ? ` / ${item.difficulty}` : ''}`,
     imageLabel:
       item.kind === 'video'
         ? 'Watch'

@@ -8,10 +8,11 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    minify: false,
     rollupOptions: {
       input: {
-        dashboard: fileURLToPath(new URL('./dashboard.html', import.meta.url)),
-        popup: fileURLToPath(new URL('./popup.html', import.meta.url)),
+        dashboard: fileURLToPath(new URL('./dashboard.app.html', import.meta.url)),
+        popup: fileURLToPath(new URL('./popup.app.html', import.meta.url)),
         background: fileURLToPath(new URL('./src/background/index.ts', import.meta.url))
       },
       output: {

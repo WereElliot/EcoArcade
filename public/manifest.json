@@ -3,7 +3,7 @@
   "name": "EcoArcade",
   "version": "2.0.0",
   "description": "Track browsing carbon, learn climate habits, verify real-world actions, and turn progress into rewards.",
-  "permissions": ["storage", "tabs", "alarms", "idle"],
+  "permissions": ["storage", "tabs", "alarms", "idle", "declarativeNetRequest"],
   "background": {
     "service_worker": "background.js",
     "type": "module"
@@ -24,9 +24,6 @@
     "16": "assets/icons/icon16.png",
     "48": "assets/icons/icon48.png",
     "128": "assets/icons/icon128.png"
-  },
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self';"
   },
   "web_accessible_resources": [
     {

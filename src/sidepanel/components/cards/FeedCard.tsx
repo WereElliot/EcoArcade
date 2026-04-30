@@ -1,4 +1,3 @@
-import { BookmarkIcon, CommentIcon } from '../icons';
 import type { FeedViewModel } from '../../config';
 
 const accentClasses: Record<FeedViewModel['accent'], string> = {
@@ -69,18 +68,8 @@ export function FeedCard({
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-4 text-sm text-white/45">
-          <span className="inline-flex items-center gap-1.5">
-            <CommentIcon className="h-4 w-4" />
-            {item.engagement.comments}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <BookmarkIcon className="h-4 w-4" />
-            {item.engagement.saves}
-          </span>
-        </div>
-        {onAction && actionLabel ? (
+      {onAction && actionLabel ? (
+        <div className="mt-4 flex justify-end">
           <button
             type="button"
             onClick={(event) => {
@@ -91,8 +80,8 @@ export function FeedCard({
           >
             {actionLabel}
           </button>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </article>
   );
 }

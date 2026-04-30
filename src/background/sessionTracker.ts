@@ -6,6 +6,7 @@ import type {
   EcoArcadeState,
   EmissionsHistory,
   LiveSessionMetrics,
+  RoutinePlan,
   SiteStat,
   TrackingState
 } from '../types/domain';
@@ -293,18 +294,25 @@ export async function restoreTrackingForFocusedTab(): Promise<void> {
 
 export async function handleLearnItemCompletion(itemId: string): Promise<DashboardSnapshot> {
   const state = await updateAppState((currentState) => {
+    const existingCatalogItem = currentState.learnCatalog.find((item) => item.id === itemId);
+    const wasCompleted = Boolean(existingCatalogItem?.completed) || Boolean(currentState.learnProgress[itemId]);
+    const learnedItem = existingCatalogItem ?? null;
+    const earnedPoints = learnedItem && !wasCompleted ? learnedItem.points : 0;
     const learnCatalog = currentState.learnCatalog.map((item) =>
       item.id === itemId && !item.completed ? { ...item, completed: true } : item
     );
-    const completedItem = learnCatalog.find((item) => item.id === itemId);
-    const wasCompleted = currentState.learnCatalog.find((item) => item.id === itemId)?.completed;
-    const earnedPoints = completedItem && !wasCompleted ? completedItem.points : 0;
 
     return {
       ...currentState,
       totalPoints: currentState.totalPoints + earnedPoints,
       badges: getBadgesFromPoints(currentState.totalPoints + earnedPoints),
-      learnCatalog
+      learnCatalog,
+      learnProgress: learnedItem
+        ? {
+            ...currentState.learnProgress,
+            [itemId]: true
+          }
+        : currentState.learnProgress
     };
   });
 
@@ -312,6 +320,21 @@ export async function handleLearnItemCompletion(itemId: string): Promise<Dashboa
     ...(await buildDashboardSnapshot()),
     ...state
   };
+}
+
+export async function saveRoutinePlan(routinePlan: RoutinePlan): Promise<DashboardSnapshot> {
+  await updateAppState((currentState) => ({
+    ...currentState,
+    routinePlan: {
+      dailyCO2Limit: Math.max(3, Math.min(120, routinePlan.dailyCO2Limit)),
+      articleGoal: Math.max(1, Math.min(6, routinePlan.articleGoal)),
+      triviaGoal: Math.max(1, Math.min(10, routinePlan.triviaGoal)),
+      reflectionGoal: Math.max(0, Math.min(3, routinePlan.reflectionGoal)),
+      enabled: routinePlan.enabled
+    }
+  }));
+
+  return buildDashboardSnapshot();
 }
 
 export async function joinChallenge(challengeId: string): Promise<DashboardSnapshot> {
@@ -326,6 +349,122 @@ export async function joinChallenge(challengeId: string): Promise<DashboardSnaps
         : challenge
     ),
     totalPoints: currentState.totalPoints + 12
+  }));
+
+  return buildDashboardSnapshot();
+}
+
+export async function createCommunityChallenge(challenge: {
+  title: string;
+  description: string;
+  target: number;
+  category: string;
+  collectiveActionType: string;
+}): Promise<DashboardSnapshot | null> {
+  const normalizedTitle = challenge.title.trim();
+  const normalizedDescription = challenge.description.trim();
+
+  if (!normalizedTitle || !normalizedDescription) {
+    return null;
+  }
+
+  const nextTarget = Math.max(10, Math.min(50000, Math.round(challenge.target)));
+
+  await updateAppState((currentState) => {
+    if (currentState.membershipTier !== 'premium') {
+      return currentState;
+    }
+
+    return {
+      ...currentState,
+      challenges: [
+        {
+          id: `challenge-${Date.now()}`,
+          title: normalizedTitle,
+          description: normalizedDescription,
+          target: nextTarget,
+          progress: 1,
+          rewardPoints: Math.min(500, Math.max(75, Math.round(nextTarget / 8))),
+          category: challenge.category.trim() || 'Community action',
+          createdBy: 'Premium member',
+          premiumOnly: true,
+          collectiveActionType: challenge.collectiveActionType.trim() || 'Collective action'
+        },
+        ...currentState.challenges
+      ],
+      totalPoints: currentState.totalPoints + 18
+    };
+  });
+
+  return buildDashboardSnapshot();
+}
+
+export async function submitCrowdsourcedArticle(article: {
+  title: string;
+  summary: string;
+  category: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  author: string;
+  sectionOneHeading: string;
+  sectionOneBody: string;
+  sectionTwoHeading: string;
+  sectionTwoBody: string;
+  bullets: string[];
+}): Promise<DashboardSnapshot | null> {
+  const title = article.title.trim();
+  const summary = article.summary.trim();
+  const category = article.category.trim();
+  const author = article.author.trim();
+  const sectionOneHeading = article.sectionOneHeading.trim();
+  const sectionOneBody = article.sectionOneBody.trim();
+  const sectionTwoHeading = article.sectionTwoHeading.trim();
+  const sectionTwoBody = article.sectionTwoBody.trim();
+  const bullets = article.bullets.map((bullet) => bullet.trim()).filter(Boolean).slice(0, 6);
+
+  if (!title || !summary || !category || !author || !sectionOneHeading || !sectionOneBody || !sectionTwoHeading || !sectionTwoBody) {
+    return null;
+  }
+
+  await updateAppState((currentState) => ({
+    ...currentState,
+    learnCatalog: [
+      {
+        id: `community-article-${Date.now()}`,
+        kind: 'article',
+        title,
+        summary,
+        minutes: Math.max(3, Math.min(12, Math.ceil((sectionOneBody.length + sectionTwoBody.length) / 380))),
+        points: article.difficulty === 'hard' ? 42 : article.difficulty === 'medium' ? 30 : 22,
+        completed: false,
+        tags: ['#article', '#community', `#${category.toLowerCase().replace(/\s+/g, '-')}`],
+        thumbnailTheme:
+          article.difficulty === 'hard' ? 'aurora' : article.difficulty === 'medium' ? 'shoreline' : 'forest',
+        sourceName: 'EcoArcade Community Desk',
+        difficulty: article.difficulty,
+        category,
+        author,
+        articleSections: [
+          {
+            heading: sectionOneHeading,
+            paragraphs: sectionOneBody
+              .split(/\n+/)
+              .map((paragraph) => paragraph.trim())
+              .filter(Boolean),
+            bullets: bullets.slice(0, 3)
+          },
+          {
+            heading: sectionTwoHeading,
+            paragraphs: sectionTwoBody
+              .split(/\n+/)
+              .map((paragraph) => paragraph.trim())
+              .filter(Boolean),
+            bullets: bullets.slice(3)
+          }
+        ]
+      },
+      ...currentState.learnCatalog
+    ],
+    totalPoints: currentState.totalPoints + 15
   }));
 
   return buildDashboardSnapshot();

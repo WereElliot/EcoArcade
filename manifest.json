@@ -1,63 +1,34 @@
 {
   "manifest_version": 3,
   "name": "EcoArcade",
-  "version": "1.1.2",
-  "description": "Track estimated browsing-related carbon activity, review site summaries, and answer awareness questions.",
-  "permissions": [
-    "tabs",
-    "storage",
-    "declarativeNetRequest",
-    "idle",
-    "alarms"
-  ],
-  "host_permissions": [
-    "https://www.youtube.com/*",
-    "https://www.youtube-nocookie.com/*"
-  ],
+  "version": "2.0.0",
+  "description": "Track browsing carbon, learn climate habits, verify real-world actions, and turn progress into rewards.",
+  "permissions": ["storage", "tabs", "alarms", "idle", "declarativeNetRequest"],
   "background": {
-    "service_worker": "background.js",
+    "service_worker": "dist/background.js",
     "type": "module"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "content/content.js"
-      ],
-      "run_at": "document_idle"
-    }
-  ],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com;"
+  "chrome_url_overrides": {
+    "newtab": "dashboard.html"
   },
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "panel/*",
-        "assets/icons/*",
-        "assets/lib/*",
-        "services/*"
-      ],
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ]
-    }
-  ],
   "action": {
-    "default_title": "Open EcoArcade dashboard",
+    "default_popup": "popup.html",
+    "default_title": "Open EcoArcade",
     "default_icon": {
-      "16": "assets/icons/icon16.png",
-      "48": "assets/icons/icon48.png",
-      "128": "assets/icons/icon128.png"
+      "16": "dist/assets/icons/icon16.png",
+      "48": "dist/assets/icons/icon48.png",
+      "128": "dist/assets/icons/icon128.png"
     }
   },
   "icons": {
-    "16": "assets/icons/icon16.png",
-    "48": "assets/icons/icon48.png",
-    "128": "assets/icons/icon128.png"
-  }
+    "16": "dist/assets/icons/icon16.png",
+    "48": "dist/assets/icons/icon48.png",
+    "128": "dist/assets/icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["dist/assets/icons/*"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ]
 }

@@ -7,6 +7,7 @@ import { LearnPage } from './pages/LearnPage';
 import { ActPage } from './pages/ActPage';
 import { CommunityPage } from './pages/CommunityPage';
 import { RewardsPage } from './pages/RewardsPage';
+import { RoutinePage } from './pages/RoutinePage';
 
 const THEME_STORAGE_KEY = 'ecoarcade-theme-mode';
 
@@ -15,11 +16,20 @@ const emptySnapshot: DashboardSnapshot = {
   totalPoints: 0,
   ecoTokens: 0,
   badges: [],
+  membershipTier: 'premium',
   siteStats: {},
   history: { daily: {}, monthly: {} },
   streakDays: 0,
   lastActiveDay: '',
+  routinePlan: {
+    dailyCO2Limit: 12,
+    articleGoal: 2,
+    triviaGoal: 3,
+    reflectionGoal: 1,
+    enabled: false
+  },
   learnCatalog: [],
+  learnProgress: {},
   challenges: [],
   donations: [],
   actionProof: {
@@ -59,6 +69,9 @@ function getInitialThemeMode(): 'dark' | 'light' {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>('insights');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showRoutinePlanner, setShowRoutinePlanner] = useState(false);
+  const [learnInitialSubTab, setLearnInitialSubTab] = useState<'articles' | 'videos' | 'trivia'>('articles');
   const [snapshot, setSnapshot] = useState<DashboardSnapshot>(emptySnapshot);
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [actionStatus, setActionStatus] = useState('');
@@ -89,12 +102,35 @@ export default function App() {
   }, [themeMode]);
 
   const completeLearnItem = async (itemId: string) => {
+    const previousLevel = snapshot.level;
+    const previousRank = snapshot.totalPoints;
     const response = await sendMessage<{ success: boolean; snapshot: DashboardSnapshot }>({
       action: 'completeLearnItem',
       itemId
     });
     if (response?.success) {
       setSnapshot(response.snapshot);
+      if (response.snapshot.level > previousLevel) {
+        setActionStatus(`Rank up. You reached level ${response.snapshot.level} with ${response.snapshot.totalPoints} Eco Points.`);
+        return;
+      }
+
+      if (response.snapshot.totalPoints > previousRank) {
+        setActionStatus(`Progress saved. ${response.snapshot.totalPoints} Eco Points total.`);
+      }
+    }
+  };
+
+  const saveRoutinePlan = async (routinePlan: DashboardSnapshot['routinePlan']) => {
+    const response = await sendMessage<{ success: boolean; snapshot: DashboardSnapshot }>({
+      action: 'saveRoutinePlan',
+      routinePlan
+    });
+    if (response?.success) {
+      setSnapshot(response.snapshot);
+      setActionStatus('Climate routine saved locally. No login required, and your plan stays on this device.');
+      setShowRoutinePlanner(false);
+      setActiveTab('insights');
     }
   };
 
@@ -106,6 +142,51 @@ export default function App() {
     if (response?.success) {
       setSnapshot(response.snapshot);
     }
+  };
+
+  const submitCrowdsourcedArticle = async (article: {
+    title: string;
+    summary: string;
+    category: string;
+    difficulty: 'easy' | 'medium' | 'hard';
+    author: string;
+    sectionOneHeading: string;
+    sectionOneBody: string;
+    sectionTwoHeading: string;
+    sectionTwoBody: string;
+    bullets: string[];
+  }) => {
+    const response = await sendMessage<{ success: boolean; reason?: string; snapshot?: DashboardSnapshot }>({
+      action: 'submitCrowdsourcedArticle',
+      article
+    });
+    if (response?.success && response.snapshot) {
+      setSnapshot(response.snapshot);
+      setActionStatus('Community article submitted and added to the in-app Learn library.');
+      return;
+    }
+
+    setActionStatus(response?.reason ?? 'The community article could not be submitted.');
+  };
+
+  const createCommunityChallenge = async (challenge: {
+    title: string;
+    description: string;
+    target: number;
+    category: string;
+    collectiveActionType: string;
+  }) => {
+    const response = await sendMessage<{ success: boolean; reason?: string; snapshot?: DashboardSnapshot }>({
+      action: 'createCommunityChallenge',
+      challenge
+    });
+    if (response?.success && response.snapshot) {
+      setSnapshot(response.snapshot);
+      setActionStatus('Premium community challenge published to the challenge board.');
+      return;
+    }
+
+    setActionStatus(response?.reason ?? 'The challenge could not be created.');
   };
 
   const convertPoints = async () => {
@@ -143,7 +224,24 @@ export default function App() {
   };
 
   const navigateTo = (tab: TabId) => {
+    setShowRoutinePlanner(false);
     setActiveTab(tab);
+  };
+
+  const openRoutinePlanner = () => {
+    setShowRoutinePlanner(true);
+    setActiveTab('insights');
+  };
+
+  const openLearnMode = (mode: 'articles' | 'trivia') => {
+    setShowRoutinePlanner(false);
+    setLearnInitialSubTab(mode);
+    setActiveTab('learn');
+    setActionStatus(
+      mode === 'articles'
+        ? 'Learn Hub opened on articles to support your daily reading mission.'
+        : 'Learn Hub opened on trivia so you can complete your awareness target.'
+    );
   };
 
   const handleCardAction = (message: string) => {
@@ -151,77 +249,116 @@ export default function App() {
   };
 
   return (
-    <div className="eco-shell min-h-screen">
-      <div className="flex min-h-screen">
-        <Sidebar
-          activeTab={activeTab}
-          onSelect={setActiveTab}
-          onQuickAction={() => {
-            setActiveTab('act');
-            setActionStatus('Quick action opened the real-world action flow.');
+    <div className="eco-shell h-screen overflow-hidden">
+      <div className="flex h-screen flex-col overflow-hidden">
+        <TopBar
+          snapshot={snapshot}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onBellClick={() => {
+            setShowRoutinePlanner(false);
+            setActiveTab('community');
+            setActionStatus('Notifications opened the community missions view.');
           }}
+          onLogoClick={() => {
+            setShowRoutinePlanner(false);
+            setActiveTab('insights');
+          }}
+          onStatClick={(tab) => {
+            setShowRoutinePlanner(false);
+            setActiveTab(tab);
+          }}
+          activeTab={activeTab}
+          onTabSelect={(tab) => {
+            setShowRoutinePlanner(false);
+            setActiveTab(tab);
+          }}
+          themeMode={themeMode}
+          onToggleTheme={() => setThemeMode((current) => (current === 'dark' ? 'light' : 'dark'))}
         />
-
-        <div className="min-w-0 flex-1">
-          <TopBar
-            snapshot={snapshot}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onBellClick={() => {
-              setActiveTab('community');
-              setActionStatus('Notifications opened the community missions view.');
-            }}
-            onLogoClick={() => setActiveTab('insights')}
-            onStatClick={setActiveTab}
+        <div className="flex min-h-0 flex-1 overflow-hidden">
+          <Sidebar
             activeTab={activeTab}
-            onTabSelect={setActiveTab}
-            themeMode={themeMode}
-            onToggleTheme={() => setThemeMode((current) => (current === 'dark' ? 'light' : 'dark'))}
+            onSelect={(tab) => {
+              setShowRoutinePlanner(false);
+              setActiveTab(tab);
+            }}
+            onQuickAction={() => {
+              setShowRoutinePlanner(false);
+              setActiveTab('act');
+              setActionStatus('Quick action opened the real-world action flow.');
+            }}
+            collapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed((current) => !current)}
           />
-          <main className="px-4 py-5 sm:px-5">
-            <div className="mx-auto max-w-[1080px]">
-              {actionStatus ? (
-                <div className="eco-toast mb-4 rounded-[18px] border px-4 py-3 text-sm">
-                  {actionStatus}
-                </div>
-              ) : null}
-              {activeTab === 'insights' ? (
-                <InsightsPage snapshot={snapshot} onNavigate={navigateTo} onCardAction={handleCardAction} />
-              ) : null}
-              {activeTab === 'learn' ? (
-                <LearnPage
-                  snapshot={snapshot}
-                  onComplete={completeLearnItem}
-                  searchQuery={searchQuery}
-                  onCardAction={handleCardAction}
-                />
-              ) : null}
-              {activeTab === 'act' ? (
-                <ActPage
-                  snapshot={snapshot}
-                  proofFile={proofFile}
-                  onFileChange={setProofFile}
-                  onSubmit={submitProof}
-                  actionStatus={actionStatus}
-                  onBannerAction={() => {
-                    setActionStatus('Pick a proof image below, then verify the action.');
-                  }}
-                  onCardAction={handleCardAction}
-                />
-              ) : null}
-              {activeTab === 'community' ? (
-                <CommunityPage snapshot={snapshot} onJoin={joinChallenge} onCardAction={handleCardAction} />
-              ) : null}
-              {activeTab === 'rewards' ? (
-                <RewardsPage
-                  snapshot={snapshot}
-                  onConvert={convertPoints}
-                  actionStatus={actionStatus}
-                  onCardAction={handleCardAction}
-                />
-              ) : null}
-            </div>
-          </main>
+
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <main className="h-full overflow-y-auto px-4 py-5 sm:px-5">
+              <div className="mx-auto max-w-[1080px]">
+                {actionStatus ? (
+                  <div className="eco-toast mb-4 rounded-[18px] border px-4 py-3 text-sm">
+                    {actionStatus}
+                  </div>
+                ) : null}
+                {showRoutinePlanner ? (
+                  <RoutinePage
+                    snapshot={snapshot}
+                    onSave={saveRoutinePlan}
+                    onOpenLearn={openLearnMode}
+                    onBack={() => setShowRoutinePlanner(false)}
+                    onCardAction={handleCardAction}
+                  />
+                ) : null}
+                {!showRoutinePlanner && activeTab === 'insights' ? (
+                  <InsightsPage
+                    snapshot={snapshot}
+                    onNavigate={navigateTo}
+                    onCardAction={handleCardAction}
+                    onOpenRoutine={openRoutinePlanner}
+                  />
+                ) : null}
+                {!showRoutinePlanner && activeTab === 'learn' ? (
+                  <LearnPage
+                    snapshot={snapshot}
+                    onComplete={completeLearnItem}
+                    onSubmitArticle={submitCrowdsourcedArticle}
+                    searchQuery={searchQuery}
+                    onCardAction={handleCardAction}
+                    initialSubTab={learnInitialSubTab}
+                  />
+                ) : null}
+                {!showRoutinePlanner && activeTab === 'act' ? (
+                  <ActPage
+                    snapshot={snapshot}
+                    proofFile={proofFile}
+                    onFileChange={setProofFile}
+                    onSubmit={submitProof}
+                    actionStatus={actionStatus}
+                    onBannerAction={() => {
+                      setActionStatus('Pick a proof image below, then verify the action.');
+                    }}
+                    onCardAction={handleCardAction}
+                  />
+                ) : null}
+                {!showRoutinePlanner && activeTab === 'community' ? (
+                  <CommunityPage
+                    snapshot={snapshot}
+                    onJoin={joinChallenge}
+                    onCreateChallenge={createCommunityChallenge}
+                    onCardAction={handleCardAction}
+                  />
+                ) : null}
+                {!showRoutinePlanner && activeTab === 'rewards' ? (
+                  <RewardsPage
+                    snapshot={snapshot}
+                    onConvert={convertPoints}
+                    actionStatus={actionStatus}
+                    onCardAction={handleCardAction}
+                  />
+                ) : null}
+              </div>
+            </main>
+          </div>
         </div>
       </div>
     </div>

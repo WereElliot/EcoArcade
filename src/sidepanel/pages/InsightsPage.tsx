@@ -8,11 +8,13 @@ import { MetricPanel } from '../components/cards/MetricPanel';
 export function InsightsPage({
   snapshot,
   onNavigate,
-  onCardAction
+  onCardAction,
+  onOpenRoutine
 }: {
   snapshot: DashboardSnapshot;
   onNavigate: (tab: 'insights' | 'learn' | 'community' | 'rewards' | 'act') => void;
   onCardAction: (message: string) => void;
+  onOpenRoutine: () => void;
 }) {
   const quickCards = getQuickActionCards(snapshot);
   const feedCards = getInsightsFeed(snapshot);
@@ -26,8 +28,8 @@ export function InsightsPage({
         cta="Enable climate routine"
         asideLabel="AI Guardian"
         onCta={() => {
-          onNavigate('learn');
-          onCardAction('Climate routine enabled. Continue in Learn for your next guided step.');
+          onOpenRoutine();
+          onCardAction('Climate routine planner opened. Set a local emissions limit and choose your Learn Hub goals.');
         }}
       />
 

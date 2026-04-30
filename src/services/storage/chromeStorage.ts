@@ -5,6 +5,7 @@ import type {
   EcoArcadeState,
   EmissionsHistory,
   LearnItem,
+  RoutinePlan,
   SiteStat,
   TrackingState
 } from '../../types/domain';
@@ -57,6 +58,9 @@ function defaultLearnCatalog(): LearnItem[] {
       thumbnailTheme: 'shoreline',
       mediaUrl: 'https://climate.nasa.gov/evidence/',
       sourceName: 'NASA Climate',
+      difficulty: 'easy',
+      category: 'Climate science',
+      author: 'NASA Climate',
       articleSections: [
         {
           heading: 'Why scientists are certain',
@@ -90,7 +94,11 @@ function defaultLearnCatalog(): LearnItem[] {
       tags: ['#video', '#climate'],
       thumbnailTheme: 'violet',
       mediaUrl: 'https://www.youtube.com/watch?v=ZqiSiX8QD7o',
-      sourceName: 'Nat Geo'
+      embedUrl: 'https://www.youtube-nocookie.com/embed/ZqiSiX8QD7o?rel=0&modestbranding=1',
+      sourceName: 'Nat Geo',
+      difficulty: 'easy',
+      category: 'Climate science',
+      author: 'Nat Geo'
     },
     {
       id: 'learn-3',
@@ -104,6 +112,9 @@ function defaultLearnCatalog(): LearnItem[] {
       thumbnailTheme: 'aurora',
       mediaUrl: 'https://www.un.org/en/climatechange/what-is-climate-change',
       sourceName: 'United Nations',
+      difficulty: 'easy',
+      category: 'Climate awareness',
+      author: 'United Nations',
       articleSections: [
         {
           heading: 'The big picture',
@@ -136,8 +147,12 @@ function defaultLearnCatalog(): LearnItem[] {
       completed: false,
       tags: ['#renewables', '#energy'],
       thumbnailTheme: 'forest',
-      mediaUrl: 'https://www.youtube.com/results?search_query=renewable+energy+explained+national+geographic',
-      sourceName: 'YouTube'
+      mediaUrl: 'https://www.youtube.com/watch?v=T4xKThjcKaE',
+      embedUrl: 'https://www.youtube-nocookie.com/embed/T4xKThjcKaE?rel=0&modestbranding=1',
+      sourceName: 'Energy 101',
+      difficulty: 'medium',
+      category: 'Renewable energy',
+      author: 'National Geographic'
     },
     {
       id: 'learn-5',
@@ -151,6 +166,9 @@ function defaultLearnCatalog(): LearnItem[] {
       thumbnailTheme: 'forest',
       mediaUrl: 'https://www.iea.org/energy-system/renewables',
       sourceName: 'IEA',
+      difficulty: 'medium',
+      category: 'Renewable energy',
+      author: 'IEA',
       articleSections: [
         {
           heading: 'Why renewables matter',
@@ -183,41 +201,12 @@ function defaultLearnCatalog(): LearnItem[] {
       completed: false,
       tags: ['#internet', '#carbon'],
       thumbnailTheme: 'violet',
-      mediaUrl: 'https://www.youtube.com/results?search_query=internet+carbon+footprint+explained',
-      sourceName: 'YouTube'
-    },
-    {
-      id: 'trivia-1',
-      kind: 'quiz',
-      title: 'Trivia: what increases digital emissions fastest?',
-      summary: 'Test your awareness of the habits that usually drive a bigger browsing footprint.',
-      minutes: 2,
-      points: 20,
-      completed: false,
-      tags: ['#quiz', '#carbon'],
-      thumbnailTheme: 'forest'
-    },
-    {
-      id: 'trivia-2',
-      kind: 'quiz',
-      title: 'Trivia: climate awareness basics',
-      summary: 'A short question on the main driver behind modern global warming.',
-      minutes: 2,
-      points: 20,
-      completed: false,
-      tags: ['#quiz', '#climate'],
-      thumbnailTheme: 'shoreline'
-    },
-    {
-      id: 'trivia-3',
-      kind: 'quiz',
-      title: 'Trivia: the cleanest first move',
-      summary: 'Pick the strongest immediate digital habit for lowering carbon without losing usefulness.',
-      minutes: 2,
-      points: 20,
-      completed: false,
-      tags: ['#quiz', '#habit'],
-      thumbnailTheme: 'aurora'
+      mediaUrl: 'https://www.youtube.com/watch?v=AzJPDCpcbXY',
+      embedUrl: 'https://www.youtube-nocookie.com/embed/AzJPDCpcbXY?rel=0&modestbranding=1',
+      sourceName: 'Smart Energy',
+      difficulty: 'medium',
+      category: 'Digital footprint',
+      author: 'YouTube'
     },
     {
       id: 'learn-7',
@@ -229,7 +218,85 @@ function defaultLearnCatalog(): LearnItem[] {
       completed: false,
       tags: ['#reflection', '#habit'],
       thumbnailTheme: 'aurora',
-      sourceName: 'EcoArcade Prompt'
+      sourceName: 'EcoArcade Prompt',
+      difficulty: 'easy',
+      category: 'Reflection',
+      author: 'EcoArcade'
+    },
+    {
+      id: 'learn-8',
+      kind: 'quiz',
+      title: 'Quick check: digital carbon basics',
+      summary: 'A short awareness question about the biggest drivers of everyday digital emissions.',
+      question: 'Which habit usually lowers digital emissions fastest?',
+      options: [
+        'Reducing unnecessary high-resolution streaming and autoplay',
+        'Opening more tabs to spread the load',
+        'Refreshing the same page repeatedly',
+        'Leaving idle videos paused in the background all day'
+      ],
+      correctIndex: 0,
+      explanation:
+        'Avoiding unnecessary data-heavy activity usually cuts network transfer, rendering, and device energy use the fastest.',
+      minutes: 2,
+      points: 16,
+      completed: false,
+      tags: ['#quiz', '#digital', '#carbon'],
+      thumbnailTheme: 'violet',
+      sourceName: 'EcoArcade Quiz Desk',
+      difficulty: 'easy',
+      category: 'Digital footprint',
+      author: 'EcoArcade'
+    },
+    {
+      id: 'learn-9',
+      kind: 'quiz',
+      title: 'Applied quiz: cleaner grids',
+      summary: 'A medium-difficulty question connecting electricity systems to digital emissions.',
+      question: 'Why does a cleaner electricity grid matter for online activity?',
+      options: [
+        'It has no effect on digital emissions',
+        'It lowers the emissions attached to the same digital behavior',
+        'It only changes transport emissions',
+        'It only affects screen brightness'
+      ],
+      correctIndex: 1,
+      explanation:
+        'The same browsing or streaming activity can carry a lower footprint when the electricity behind networks and devices is cleaner.',
+      minutes: 3,
+      points: 22,
+      completed: false,
+      tags: ['#quiz', '#energy', '#grid'],
+      thumbnailTheme: 'forest',
+      sourceName: 'EcoArcade Quiz Desk',
+      difficulty: 'medium',
+      category: 'Renewable energy',
+      author: 'EcoArcade'
+    },
+    {
+      id: 'learn-10',
+      kind: 'quiz',
+      title: 'Scenario quiz: community climate action',
+      summary: 'A harder question about turning visible action into lasting climate value.',
+      question: 'What makes a tree-planting action more climate valuable over time?',
+      options: [
+        'Uploading one photo only',
+        'Planting without follow-up care',
+        'Pairing planting with long-term stewardship and survival tracking',
+        'Avoiding community participation'
+      ],
+      correctIndex: 2,
+      explanation:
+        'Long-term survival, maintenance, and community ownership are what turn a one-day action into durable ecological value.',
+      minutes: 4,
+      points: 30,
+      completed: false,
+      tags: ['#quiz', '#restoration', '#community'],
+      thumbnailTheme: 'aurora',
+      sourceName: 'EcoArcade Quiz Desk',
+      difficulty: 'hard',
+      category: 'Community action',
+      author: 'EcoArcade'
     }
   ];
 }
@@ -242,7 +309,10 @@ function defaultChallenges(): Challenge[] {
       description: 'Support the community challenge by contributing real-world action proofs.',
       target: 100,
       progress: 37,
-      rewardPoints: 250
+      rewardPoints: 250,
+      category: 'Reforestation',
+      createdBy: 'EcoArcade',
+      collectiveActionType: 'Tree planting'
     },
     {
       id: 'challenge-2',
@@ -250,7 +320,10 @@ function defaultChallenges(): Challenge[] {
       description: 'Spend one day using lower-footprint digital habits and help the community trend down.',
       target: 1000,
       progress: 612,
-      rewardPoints: 90
+      rewardPoints: 90,
+      category: 'Digital footprint',
+      createdBy: 'EcoArcade',
+      collectiveActionType: 'Digital routine'
     }
   ];
 }
@@ -283,6 +356,16 @@ function defaultActionProof(): ActionProof {
   };
 }
 
+function defaultRoutinePlan(): RoutinePlan {
+  return {
+    dailyCO2Limit: 12,
+    articleGoal: 2,
+    triviaGoal: 3,
+    reflectionGoal: 1,
+    enabled: false
+  };
+}
+
 export function createEmptyHistory(): EmissionsHistory {
   return {
     daily: {},
@@ -296,11 +379,14 @@ export function createDefaultState(): EcoArcadeState {
     totalPoints: 120,
     ecoTokens: 6,
     badges: ['Eco Rookie'],
+    membershipTier: 'premium',
     siteStats: {},
     history: createEmptyHistory(),
     streakDays: 4,
     lastActiveDay: getLocalDayKey(new Date()),
+    routinePlan: defaultRoutinePlan(),
     learnCatalog: defaultLearnCatalog(),
+    learnProgress: {},
     challenges: defaultChallenges(),
     donations: defaultDonations(),
     actionProof: defaultActionProof()
@@ -322,7 +408,8 @@ export async function getAppState(): Promise<EcoArcadeState> {
     ...storedState,
     badges: getBadgesFromPoints(storedState.totalPoints ?? 0),
     siteStats: cloneSiteStats(storedState.siteStats ?? {}),
-    history: cloneHistory(storedState.history ?? createEmptyHistory())
+    history: cloneHistory(storedState.history ?? createEmptyHistory()),
+    learnProgress: storedState.learnProgress ?? {}
   };
 }
 

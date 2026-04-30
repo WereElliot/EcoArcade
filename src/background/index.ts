@@ -4,18 +4,22 @@ import type { RuntimeRequest } from '../services/messaging/contracts';
 import type { DashboardSnapshot } from '../types/domain';
 import {
   buildDashboardSnapshot,
+  createCommunityChallenge,
   convertPointsToToken,
   finalizeTrackingSession,
   handleLearnItemCompletion,
   initializeTrackingEnvironment,
   joinChallenge,
   restoreTrackingForFocusedTab,
+  saveRoutinePlan,
   startTrackingSession,
   submitActionProof,
+  submitCrowdsourcedArticle,
   updateIdleState
 } from './sessionTracker';
 
 const DASHBOARD_URL = chrome.runtime.getURL('dashboard.html');
+const YOUTUBE_EMBED_RULE_IDS = [41001, 41002];
 
 function getBadgeColor(co2: number): string {
   if (co2 >= 8) {
@@ -97,12 +101,62 @@ async function refreshFocusedBadge(): Promise<void> {
   await updateActionPresentation(activeTab?.id, activeTab?.url ?? activeTab?.pendingUrl);
 }
 
+async function configureYoutubeEmbedRules(): Promise<void> {
+  if (!chrome.declarativeNetRequest?.updateDynamicRules) {
+    return;
+  }
+
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: YOUTUBE_EMBED_RULE_IDS,
+    addRules: [
+      {
+        id: YOUTUBE_EMBED_RULE_IDS[0],
+        priority: 1,
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+          requestHeaders: [
+            {
+              header: 'referer',
+              operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+              value: 'https://www.youtube.com/'
+            }
+          ]
+        },
+        condition: {
+          urlFilter: '||youtube.com/embed/',
+          resourceTypes: [chrome.declarativeNetRequest.ResourceType.SUB_FRAME]
+        }
+      },
+      {
+        id: YOUTUBE_EMBED_RULE_IDS[1],
+        priority: 1,
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+          requestHeaders: [
+            {
+              header: 'referer',
+              operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+              value: 'https://www.youtube.com/'
+            }
+          ]
+        },
+        condition: {
+          urlFilter: '||youtube-nocookie.com/embed/',
+          resourceTypes: [chrome.declarativeNetRequest.ResourceType.SUB_FRAME]
+        }
+      }
+    ]
+  });
+}
+
 chrome.runtime.onInstalled.addListener(() => {
+  void configureYoutubeEmbedRules();
   void initializeTrackingEnvironment().then(refreshFocusedBadge);
   void restoreTrackingForFocusedTab();
 });
 
 chrome.runtime.onStartup.addListener(() => {
+  void configureYoutubeEmbedRules();
   void initializeTrackingEnvironment().then(refreshFocusedBadge);
   void restoreTrackingForFocusedTab();
 });
@@ -166,10 +220,36 @@ chrome.runtime.onMessage.addListener((request: RuntimeRequest, sender, sendRespo
         sendResponse({ success: true, snapshot });
         return;
       }
+      case 'saveRoutinePlan': {
+        const snapshot = await saveRoutinePlan(request.routinePlan);
+        await refreshFocusedBadge();
+        sendResponse({ success: true, snapshot });
+        return;
+      }
       case 'joinChallenge': {
         const snapshot = await joinChallenge(request.challengeId);
         await refreshFocusedBadge();
         sendResponse({ success: true, snapshot });
+        return;
+      }
+      case 'createCommunityChallenge': {
+        const snapshot = await createCommunityChallenge(request.challenge);
+        await refreshFocusedBadge();
+        sendResponse(
+          snapshot
+            ? { success: true, snapshot }
+            : { success: false, reason: 'Premium users can create challenges after filling every field.' }
+        );
+        return;
+      }
+      case 'submitCrowdsourcedArticle': {
+        const snapshot = await submitCrowdsourcedArticle(request.article);
+        await refreshFocusedBadge();
+        sendResponse(
+          snapshot
+            ? { success: true, snapshot }
+            : { success: false, reason: 'Fill every article field before submitting to the community desk.' }
+        );
         return;
       }
       case 'convertPointsToToken': {

@@ -8,11 +8,20 @@ const emptySnapshot: DashboardSnapshot = {
   totalPoints: 0,
   ecoTokens: 0,
   badges: [],
+  membershipTier: 'premium',
   siteStats: {},
   history: { daily: {}, monthly: {} },
   streakDays: 0,
   lastActiveDay: '',
+  routinePlan: {
+    dailyCO2Limit: 12,
+    articleGoal: 2,
+    triviaGoal: 3,
+    reflectionGoal: 1,
+    enabled: false
+  },
   learnCatalog: [],
+  learnProgress: {},
   challenges: [],
   donations: [],
   actionProof: {

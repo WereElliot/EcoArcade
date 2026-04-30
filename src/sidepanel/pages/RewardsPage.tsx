@@ -28,13 +28,13 @@ export function RewardsPage({
         <div className="space-y-4">
           <MetricPanel label="EcoTokens" value={`${snapshot.ecoTokens}`} note="Available in your wallet balance." tone="violet" onClick={() => onCardAction(`${snapshot.ecoTokens} ECO currently available.`)} />
           <MetricPanel label="Points" value={`${snapshot.totalPoints}`} note="Ready for conversion into ECO." tone="green" onClick={() => onCardAction(`${snapshot.totalPoints} points available for conversion.`)} />
-          <div className="rounded-[24px] border border-white/10 bg-[#171c26] p-5">
+          <div className="eco-surface rounded-[24px] border p-5">
             <p className="text-xs uppercase tracking-[0.26em] text-white/40">Convert</p>
             <p className="mt-2 text-sm leading-7 text-white/60">Every 100 Eco Points can convert into 1 EcoToken.</p>
             <button
               type="button"
               onClick={onConvert}
-              className="mt-4 rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#10131c] transition hover:-translate-y-0.5"
+              className="eco-cta mt-4 rounded-full px-4 py-2 text-sm font-semibold transition hover:-translate-y-0.5"
             >
               Convert points
             </button>
@@ -45,7 +45,7 @@ export function RewardsPage({
           {snapshot.donations.map((project) => (
             <article
               key={project.id}
-              className="cursor-pointer rounded-[24px] border border-white/10 bg-[#171c26] p-5 transition hover:-translate-y-0.5 hover:border-white/16"
+              className="eco-surface eco-surface-hover cursor-pointer rounded-[24px] border p-5 transition hover:-translate-y-0.5 hover:border-white/16"
               onClick={() => onCardAction(`Selected ${project.name} in ${project.region}. Suggested contribution: ${project.tokenCost} ECO.`)}
             >
               <p className="text-xs uppercase tracking-[0.26em] text-white/40">{project.region}</p>
@@ -54,7 +54,7 @@ export function RewardsPage({
               <p className="mt-4 text-sm text-white/46">{project.tokenCost} ECO suggested contribution</p>
             </article>
           ))}
-          <article className="rounded-[24px] border border-white/10 bg-[#171c26] p-5 xl:col-span-2">
+          <article className="eco-surface rounded-[24px] border p-5 xl:col-span-2">
             <p className="text-xs uppercase tracking-[0.26em] text-white/40">Status</p>
             <p className="mt-3 text-sm leading-7 text-white/60">{actionStatus || 'Rewards are ready for conversion and donation flows.'}</p>
           </article>

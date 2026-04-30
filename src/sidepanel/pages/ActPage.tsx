@@ -38,34 +38,34 @@ export function ActPage({
       />
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_320px]">
-        <div className="rounded-[24px] border border-white/10 bg-[#171c26] p-5">
+        <div className="eco-surface rounded-[24px] border p-5">
           <p className="text-xs uppercase tracking-[0.26em] text-white/40">Upload evidence</p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Verify a real-world climate action</h2>
           <p className="mt-3 text-sm leading-7 text-white/60">
             Upload one photo from a cleanup, tree planting, or restoration moment. The next integration pass will connect Gemini verification and Solana minting into this same flow.
           </p>
 
-          <div className="mt-6 rounded-[20px] border border-dashed border-white/12 bg-white/4 p-5">
+          <div className="mt-6 rounded-[20px] border border-dashed border-white/12 bg-emerald-500/6 p-5">
             <input
               ref={fileInputRef}
               type="file"
               accept="image/*"
               onChange={(event) => onFileChange(event.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-white/70 file:mr-4 file:rounded-full file:border-0 file:bg-violet-500/16 file:px-4 file:py-2 file:text-sm file:text-white"
+              className="block w-full text-sm text-white/70 file:mr-4 file:rounded-full file:border-0 file:bg-emerald-500/16 file:px-4 file:py-2 file:text-sm file:text-white"
             />
             <div className="mt-4 flex items-center justify-between gap-3">
               <p className="text-sm text-white/50">{proofFile ? proofFile.name : 'No file selected yet.'}</p>
               <button
                 type="button"
                 onClick={onSubmit}
-                className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#10131c] transition hover:-translate-y-0.5"
+                className="eco-cta rounded-full px-4 py-2 text-sm font-semibold transition hover:-translate-y-0.5"
               >
                 Verify action
               </button>
             </div>
           </div>
 
-          <div className="mt-5 rounded-[20px] border border-white/10 bg-white/5 p-4">
+          <div className="mt-5 rounded-[20px] border border-white/10 bg-emerald-500/6 p-4">
             <p className="text-sm font-medium text-white">Verification status</p>
             <p className="mt-2 text-sm leading-6 text-white/60">{actionStatus || snapshot.actionProof.summary}</p>
           </div>

@@ -73,43 +73,40 @@ export function SearchIcon(props: IconProps) {
 }
 
 export function BellIcon(props: IconProps) {
-  return baseIcon(
-    <>
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9" />
-      <path d="M10 21a2 2 0 0 0 4 0" />
-    </>,
-    props
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M12 3.25a5.75 5.75 0 0 0-5.75 5.75v1.06c0 1.32-.42 2.61-1.2 3.68l-1.17 1.59A1.25 1.25 0 0 0 4.9 17.3h14.2a1.25 1.25 0 0 0 1.01-1.97l-1.17-1.6a6.4 6.4 0 0 1-1.19-3.67V9A5.75 5.75 0 0 0 12 3.25Zm-2.7 15.4a2.7 2.7 0 0 0 5.4 0H9.3Z" />
+    </svg>
   );
 }
 
 export function FlameIcon(props: IconProps) {
-  return baseIcon(
-    <>
-      <path d="M12 3s4 4.3 4 8.2A4 4 0 0 1 8 11c0-2.8 1.8-5.2 4-8Z" />
-      <path d="M12 21a5 5 0 0 0 5-5c0-3-2-4.6-5-7-3 2.4-5 4-5 7a5 5 0 0 0 5 5Z" />
-    </>,
-    props
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M12.22 2.8a.75.75 0 0 0-1.08 0c-2.58 2.87-4.89 5.72-4.89 8.88 0 2.12.95 3.84 2.34 5.01A6.2 6.2 0 0 0 12 21.2a6.2 6.2 0 0 0 3.4-1c1.4-1.17 2.35-2.9 2.35-5.02 0-3.03-1.94-5.22-4.28-7.33-.48-.43-.93-.84-1.25-1.22-.47-.57-.83-1.16-1.18-1.83Z" />
+      <path d="M12 11.1c-1.72 1.55-2.9 2.66-2.9 4.34a2.9 2.9 0 1 0 5.8 0c0-1.46-.83-2.46-2.12-3.68L12 11.1Z" opacity=".4" />
+    </svg>
   );
 }
 
 export function GemIcon(props: IconProps) {
-  return baseIcon(
-    <>
-      <path d="M6 8 9 3h6l3 5-6 13Z" />
-      <path d="M3 8h18" />
-    </>,
-    props
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M8.17 3.5a1.75 1.75 0 0 0-1.45.77l-3.15 4.7a1.75 1.75 0 0 0 .15 2.15l7.01 8.24a1.75 1.75 0 0 0 2.54 0l7.01-8.24a1.75 1.75 0 0 0 .15-2.14l-3.15-4.71a1.75 1.75 0 0 0-1.45-.77H8.17Z" />
+      <path d="M8.2 5.2 6.03 9h11.94L15.8 5.2h-2.43L12 8.12 10.63 5.2H8.2Z" opacity=".35" />
+    </svg>
   );
 }
 
 export function PointsIcon(props: IconProps) {
-  return baseIcon(
-    <>
-      <circle cx="12" cy="12" r="8" />
-      <path d="M12 7v10" />
-      <path d="M8 10h4.5a2.5 2.5 0 0 1 0 5H8" />
-    </>,
-    props
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M12 3.25a8.75 8.75 0 1 0 0 17.5 8.75 8.75 0 0 0 0-17.5Z" />
+      <path
+        d="M9.1 7.8h3.48a3.2 3.2 0 0 1 0 6.4H10.7v2.08a.7.7 0 1 1-1.4 0V8.5a.7.7 0 0 1 .7-.7Zm1.6 1.4v3.6h1.88a1.8 1.8 0 1 0 0-3.6H10.7Z"
+        fill="#092314"
+      />
+    </svg>
   );
 }
 
@@ -145,22 +142,40 @@ export function ChevronRightIcon(props: IconProps) {
 }
 
 export function SunIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <circle cx="12" cy="12" r="4.1" />
+      <path d="M12 1.85a.8.8 0 0 1 .8.8v2.1a.8.8 0 0 1-1.6 0v-2.1a.8.8 0 0 1 .8-.8Zm0 17.4a.8.8 0 0 1 .8.8v2.1a.8.8 0 0 1-1.6 0v-2.1a.8.8 0 0 1 .8-.8ZM4.74 4.73a.8.8 0 0 1 1.13 0l1.48 1.48a.8.8 0 0 1-1.14 1.13L4.74 5.86a.8.8 0 0 1 0-1.13Zm11.9 11.9a.8.8 0 0 1 1.13 0l1.49 1.48a.8.8 0 0 1-1.14 1.14l-1.48-1.49a.8.8 0 0 1 0-1.13ZM1.85 12a.8.8 0 0 1 .8-.8h2.1a.8.8 0 0 1 0 1.6h-2.1a.8.8 0 0 1-.8-.8Zm17.4 0a.8.8 0 0 1 .8-.8h2.1a.8.8 0 0 1 0 1.6h-2.1a.8.8 0 0 1-.8-.8ZM6.2 16.65a.8.8 0 0 1 1.14 1.13l-1.48 1.49a.8.8 0 1 1-1.13-1.14l1.47-1.48Zm11.9-11.9a.8.8 0 0 1 1.14 1.13l-1.49 1.48a.8.8 0 1 1-1.13-1.13l1.48-1.48Z" />
+    </svg>
+  );
+}
+
+export function MoonIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M14.27 2.6a.75.75 0 0 0-.94.88 8.45 8.45 0 0 1-10 10 .75.75 0 0 0-.87.95 9.55 9.55 0 1 0 11.81-11.83Z" />
+    </svg>
+  );
+}
+
+export function PanelLeftCloseIcon(props: IconProps) {
   return baseIcon(
     <>
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2.2" />
-      <path d="M12 19.8V22" />
-      <path d="m4.9 4.9 1.6 1.6" />
-      <path d="m17.5 17.5 1.6 1.6" />
-      <path d="M2 12h2.2" />
-      <path d="M19.8 12H22" />
-      <path d="m4.9 19.1 1.6-1.6" />
-      <path d="m17.5 6.5 1.6-1.6" />
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M9 4v16" />
+      <path d="m15 9-3 3 3 3" />
     </>,
     props
   );
 }
 
-export function MoonIcon(props: IconProps) {
-  return baseIcon(<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4 6.8 6.8 0 0 0 20 14.5Z" />, props);
+export function PanelLeftOpenIcon(props: IconProps) {
+  return baseIcon(
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M9 4v16" />
+      <path d="m12 9 3 3-3 3" />
+    </>,
+    props
+  );
 }

@@ -25,6 +25,18 @@ export interface Challenge {
   target: number;
   progress: number;
   rewardPoints: number;
+  category?: string;
+  createdBy?: string;
+  premiumOnly?: boolean;
+  collectiveActionType?: string;
+}
+
+export interface RoutinePlan {
+  dailyCO2Limit: number;
+  articleGoal: number;
+  triviaGoal: number;
+  reflectionGoal: number;
+  enabled: boolean;
 }
 
 export interface LearnArticleSection {
@@ -44,8 +56,17 @@ export interface LearnItem {
   tags?: string[];
   thumbnailTheme?: string;
   mediaUrl?: string;
+  embedUrl?: string;
   sourceName?: string;
   articleSections?: LearnArticleSection[];
+  difficulty?: 'easy' | 'medium' | 'hard';
+  category?: string;
+  author?: string;
+  question?: string;
+  options?: string[];
+  correctIndex?: number;
+  explanation?: string;
+  levelRequirement?: number;
 }
 
 export interface DonationProject {
@@ -69,11 +90,14 @@ export interface EcoArcadeState {
   totalPoints: number;
   ecoTokens: number;
   badges: BadgeId[];
+  membershipTier: 'core' | 'premium';
   siteStats: Record<string, SiteStat>;
   history: EmissionsHistory;
   streakDays: number;
   lastActiveDay: string;
+  routinePlan: RoutinePlan;
   learnCatalog: LearnItem[];
+  learnProgress: Record<string, boolean>;
   challenges: Challenge[];
   donations: DonationProject[];
   actionProof: ActionProof;
